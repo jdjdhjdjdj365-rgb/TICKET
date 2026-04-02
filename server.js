@@ -853,5 +853,5 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log('7rz Server running on port', PORT));
