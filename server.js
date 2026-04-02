@@ -9,7 +9,7 @@ const session = require('express-session');
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://ticket-production-8b62.up.railway.app',
   credentials: true
 }));
 app.use(express.static('public'));
@@ -27,7 +27,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/tickets');
 // Discord Configuration
 const DISCORD_CLIENT_ID = 'YOUR_DISCORD_CLIENT_ID';
 const DISCORD_CLIENT_SECRET = 'YOUR_DISCORD_CLIENT_SECRET';
-const DISCORD_REDIRECT_URI = 'http://localhost:3000/auth/discord/callback';
+const DISCORD_REDIRECT_URI = 'https://ticket-production-8b62.up.railway.app/auth/discord/callback';
 const DISCORD_GUILD_ID = 'Y1410175025796874333'; // For role checking
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1489290445019418811/aqgelFRBHm-UeRYZ7X4lI7a084-agQp7VH3U52CZFRXMOhHeFAJSdcMWpnyoPYiTl2cH '; // For ticket notifications
 const JWT_SECRET = 'your-jwt-secret-change-this';
@@ -295,7 +295,7 @@ app.get('/auth/discord/callback', async (req, res) => {
     req.session.token = token;
 
     // Redirect to frontend with token
-    res.redirect(`http://localhost:3000/dashboard.html?token=${token}`);
+    res.redirect(`https://ticket-production-8b62.up.railway.app/dashboard.html?token=${token}`);
     
   } catch (error) {
     console.error('Discord OAuth error:', error);
