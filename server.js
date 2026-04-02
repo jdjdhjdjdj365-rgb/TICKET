@@ -22,33 +22,33 @@ app.use(session({
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
 }));
 
-// MongoDB Connection with retry and timeout handling
-let dbConnected = false;
+// MongoDB Connection - temporarily disabled to fix 502 errors
+// let dbConnected = false;
 
-async function connectToMongoDB() {
-  try {
-    const options = {
-      serverSelectionTimeoutMS: 5000, // 5 seconds timeout
-      connectTimeoutMS: 10000, // 10 seconds timeout
-      maxPoolSize: 10, // Limit connections
-      bufferCommands: false, // Disable mongoose buffering
-      bufferMaxEntries: 0 // Disable mongoose buffering
-    };
-    
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/tickets', options);
-    dbConnected = true;
-    console.log('Connected to MongoDB successfully');
-  } catch (err) {
-    console.error('MongoDB connection failed:', err.message);
-    dbConnected = false;
-    console.log('Starting server without MongoDB...');
-  }
-}
+// async function connectToMongoDB() {
+//   try {
+//     const options = {
+//       serverSelectionTimeoutMS: 5000, // 5 seconds timeout
+//       connectTimeoutMS: 10000, // 10 seconds timeout
+//       maxPoolSize: 10, // Limit connections
+//       bufferCommands: false, // Disable mongoose buffering
+//       bufferMaxEntries: 0 // Disable mongoose buffering
+//     };
+//     
+//     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/tickets', options);
+//     dbConnected = true;
+//     console.log('Connected to MongoDB successfully');
+//   } catch (err) {
+//     console.error('MongoDB connection failed:', err.message);
+//     dbConnected = false;
+//     console.log('Starting server without MongoDB...');
+//   }
+// }
 
 // Connect to MongoDB
-connectToMongoDB();
+// connectToMongoDB();
 
-console.log('7rz Ticket System starting...');
+console.log('7rz Ticket System starting without MongoDB (temporarily)...');
 
 // Discord Configuration with fallbacks
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID || '1336042795005116426';
@@ -837,25 +837,20 @@ app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    dbConnected: dbConnected
+    dbConnected: false,
+    message: 'Running without MongoDB (temporarily)'
   });
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
-  mongoose.connection.close(() => {
-    console.log('MongoDB connection closed');
-    process.exit(0);
-  });
+  process.exit(0);
 });
 
 process.on('SIGINT', () => {
   console.log('SIGINT received, shutting down gracefully');
-  mongoose.connection.close(() => {
-    console.log('MongoDB connection closed');
-    process.exit(0);
-  });
+  process.exit(0);
 });
 
 const PORT = process.env.PORT || 3000;
