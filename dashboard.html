@@ -1,9 +1,2545 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="h-full">
 <head>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.discordapp.com" crossorigin />
+  <script>(function(){try{if(localStorage.getItem('nw-theme')==='light')document.documentElement.classList.add('light');var l=localStorage.getItem('nw-lang');if(l==='ar'){document.documentElement.lang='ar';document.documentElement.dir='rtl';}}catch(e){}})()</script>
+  <title>Dashboard - 7rz</title>
+  <script>var _tw=console.warn;console.warn=function(){if(arguments[0]&&typeof arguments[0]==='string'&&arguments[0].indexOf('cdn.tailwindcss.com')!==-1)return;_tw.apply(console,arguments)};</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#052e16',100:'#14532d',200:'#166534',300:'#15803d',400:'#16a34a',500:'#22c55e',600:'#4ade80',700:'#86efac',800:'#bbf7d0',900:'#dcfce7' },
+            discord: { DEFAULT:'#5865F2', dark:'#4752c4' },
+            surface: { DEFAULT:'#111827', soft:'#0b1120', border:'rgba(255,255,255,0.08)', muted:'#1e293b' },
+            dm: { card:'#111827', elevated:'#1e293b', input:'#0f172a' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          boxShadow: {
+            'glow': '0 0 20px rgba(34,197,94,0.2)',
+            'glow-lg': '0 0 40px rgba(34,197,94,0.25)',
+            'card': '0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)',
+            'card-hover': '0 10px 25px rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.3)',
+            'sidebar': '1px 0 0 0 rgba(255,255,255,0.05)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; position: relative; line-height: 1.5; }
+
+    /* Grid overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(34,197,94,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,197,94,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #fx-cursor { display: none !important; }
+
+    /* Ambient mouse glow */
+    #fx-glow {
+      position: fixed;
+      width: 50vw;
+      height: 50vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%);
+      z-index: 0;
+      filter: blur(80px);
+      pointer-events: none;
+      transition: left 0.5s cubic-bezier(0.16,1,0.3,1), top 0.5s cubic-bezier(0.16,1,0.3,1);
+      will-change: left, top;
+    }
+
+    /* Particle canvas */
+    #fx-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    /* Floating ambient orbs */
+    .fx-orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(100px);
+      animation: fxFloat infinite alternate ease-in-out;
+    }
+    @keyframes fxFloat {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(20px, 12px) scale(1.04); }
+    }
+
+    button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    button:active { transform: scale(0.97); }
+    #ticket-thread, #admin-thread { contain: content; }
+    .ticket-item { contain: layout style; }
+
+    .fade-in { animation: fadeIn .25s cubic-bezier(.4,0,.2,1); }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+    .slide-up { animation: slideUp .3s cubic-bezier(.4,0,.2,1); }
+    @keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    .scale-in { animation: scaleIn .2s cubic-bezier(.4,0,.2,1); }
+    @keyframes scaleIn { from{opacity:0;transform:scale(.97)} to{opacity:1;transform:scale(1)} }
+
+    .status-pulse { animation: statusPulse .35s cubic-bezier(.4,0,.2,1); }
+    @keyframes statusPulse { 0%{transform:scale(1)} 50%{transform:scale(1.03);box-shadow:0 0 12px rgba(52,211,153,.2)} 100%{transform:scale(1)} }
+
+    .slide-in-right { animation: slideInRight .2s cubic-bezier(.4,0,.2,1); }
+    @keyframes slideInRight { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:translateX(0)} }
+
+    .slide-in-left { animation: slideInLeft .2s cubic-bezier(.4,0,.2,1); }
+    @keyframes slideInLeft { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+
+    .section-fade { animation: sectionFade .2s ease-out; }
+    @keyframes sectionFade { from{opacity:0} to{opacity:1} }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      .fx-orb, #fx-canvas, #fx-glow, #fx-cursor { display: none !important; }
+      body::after { display: none !important; }
+    }
+
+    .msg-bubble { word-break: break-word; white-space: pre-wrap; }
+
+    .btn-glow {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-glow::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(135deg, rgba(34,197,94,0.4), rgba(22,163,74,0.2));
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity .3s;
+      z-index: -1;
+      filter: blur(12px);
+    }
+    .btn-glow:hover::after { opacity: 1; }
+
+    .glass { background: rgba(17,24,39,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+    .sidebar-link {
+      transition: all .12s ease;
+    }
+    .sidebar-link:hover { background: rgba(34,197,94,0.1); }
+    .sidebar-link.active { background: rgba(34,197,94,0.15); color: #4ade80; }
+
+    .skeleton {
+      background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+    .skeleton-line { height: 12px; margin-bottom: 8px; }
+    .skeleton-line-sm { height: 10px; margin-bottom: 6px; width: 60%; }
+    .skeleton-circle { border-radius: 50%; }
+    .skeleton-card { padding: 16px; border-radius: 16px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    :focus-visible { outline: 2px solid rgba(34,197,94,0.5); outline-offset: 2px; border-radius: 8px; }
+    button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+      outline: 2px solid rgba(34,197,94,0.5); outline-offset: 2px;
+    }
+
+    .send-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.5s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .ticket-card-hover { transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+    .ticket-card-hover:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-color: rgba(34,197,94,0.15); }
+
+    .role-ring-1 { ring: 2px; --tw-ring-color: rgba(148,163,184,0.3); }
+    .role-ring-2 { ring: 2px; --tw-ring-color: rgba(96,165,250,0.4); }
+    .role-ring-3 { ring: 2px; --tw-ring-color: rgba(192,132,252,0.4); }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    
+
+    /* ===== Light Mode ===== */
+    html.light { color-scheme: light; }
+    html.light body { background-color: #f1f5f9 !important; color: #334155 !important; }
+    html.light body::after {
+      background-image:
+        linear-gradient(rgba(34,197,94,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,197,94,0.05) 1px, transparent 1px) !important;
+    }
+    html.light .glass { background: rgba(255,255,255,0.88) !important; }
+    html.light .fx-orb { opacity: 0.12 !important; }
+    html.light #fx-canvas { opacity: 0.12 !important; }
+    html.light #fx-glow { opacity: 0.25 !important; }
+    html.light .gradient-text { background: linear-gradient(135deg, #16a34a, #15803d) !important; -webkit-background-clip: text !important; background-clip: text !important; }
+
+    html.light .bg-surface-soft { background-color: #f1f5f9 !important; }
+    html.light .bg-surface { background-color: #ffffff !important; }
+    html.light .bg-surface-muted { background-color: #e2e8f0 !important; }
+    html.light .bg-dm-card { background-color: #ffffff !important; }
+    html.light .bg-dm-elevated { background-color: #f8fafc !important; }
+    html.light .bg-dm-input { background-color: #e2e8f0 !important; }
+
+    html.light .text-white { color: #0f172a !important; }
+    html.light .text-slate-200 { color: #334155 !important; }
+    html.light .text-slate-300 { color: #475569 !important; }
+    html.light .text-slate-400 { color: #64748b !important; }
+    html.light .text-slate-500 { color: #94a3b8 !important; }
+    html.light .text-slate-600 { color: #475569 !important; }
+
+    html.light .border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light .border-white\/10 { border-color: rgba(0,0,0,0.08) !important; }
+    html.light .border-white\/20 { border-color: rgba(0,0,0,0.12) !important; }
+    html.light .border-y.border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light .border-b.border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light .border-r.border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light .border-t.border-white\/5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light [class*="border-white"] { border-color: rgba(0,0,0,0.07) !important; }
+
+    html.light .bg-white\/5 { background-color: rgba(0,0,0,0.03) !important; }
+    html.light .bg-white\/10 { background-color: rgba(0,0,0,0.05) !important; }
+    html.light .bg-white\/15 { background-color: rgba(0,0,0,0.06) !important; }
+    html.light .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.04) !important; }
+    html.light .hover\:bg-white\/15:hover { background-color: rgba(0,0,0,0.07) !important; }
+    html.light .hover\:text-white:hover { color: #0f172a !important; }
+    html.light .hover\:text-slate-300:hover { color: #1e293b !important; }
+    html.light .hover\:border-white\/20:hover { border-color: rgba(0,0,0,0.12) !important; }
+
+    html.light .ring-white\/10 { --tw-ring-color: rgba(0,0,0,0.06) !important; }
+    html.light .ring-2.ring-white\/10 { --tw-ring-color: rgba(0,0,0,0.06) !important; }
+    html.light .ring-1.ring-white\/10 { --tw-ring-color: rgba(0,0,0,0.06) !important; }
+
+    html.light .shadow-card { box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04) !important; }
+    html.light .shadow-card-hover, html.light .hover\:shadow-card-hover:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.06) !important; }
+
+    html.light .sidebar-link:hover { background: rgba(34,197,94,0.08) !important; }
+    html.light .sidebar-link.active { background: rgba(34,197,94,0.1) !important; color: #16a34a !important; }
+
+    html.light .skeleton { background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%) !important; background-size: 200% 100% !important; }
+    html.light :focus-visible { outline-color: rgba(22,163,74,0.5) !important; }
+    html.light .ticket-card-hover:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important; border-color: rgba(22,163,74,0.2) !important; }
+
+    html.light ::-webkit-scrollbar-thumb { background: #cbd5e1 !important; }
+    html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8 !important; }
+
+    html.light .btn-glow::after { background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(22,163,74,0.15)) !important; }
+
+    html.light .shadow-lg.shadow-green-500\/25 { box-shadow: 0 10px 15px -3px rgba(34,197,94,0.15), 0 4px 6px -4px rgba(34,197,94,0.1) !important; }
+    html.light .shadow-lg.shadow-green-500\/20 { box-shadow: 0 10px 15px -3px rgba(34,197,94,0.12), 0 4px 6px -4px rgba(34,197,94,0.08) !important; }
+
+    html.light .bg-gradient-to-br.from-surface-soft { background: linear-gradient(to bottom right, #f1f5f9, #f1f5f9, rgba(34,197,94,0.05)) !important; }
+
+    /* ===== Floating Settings Control ===== */
+    #nw-toggles {
+      position: fixed;
+      bottom: 120px;
+      left: 16px;
+      z-index: 99999;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      gap: 0;
+      padding: 0;
+      border-radius: 14px;
+      background: rgba(17,24,39,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    html.light #nw-toggles {
+      background: rgba(255,255,255,0.95);
+      border-color: rgba(0,0,0,0.06);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+    }
+
+    #nw-toggle-trigger {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+    #nw-toggle-trigger:hover { color: #4ade80; }
+    html.light #nw-toggle-trigger { color: #64748b; }
+    html.light #nw-toggle-trigger:hover { color: #16a34a; }
+
+    #nw-toggle-trigger svg {
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    #nw-toggles.expanded #nw-toggle-trigger svg {
+      transform: rotate(90deg);
+    }
+
+    #nw-toggle-panel {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 0;
+      opacity: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: max-width 0.3s cubic-bezier(0.4,0,0.2,1),
+                  opacity 0.25s ease,
+                  padding 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    #nw-toggles.expanded #nw-toggle-panel {
+      max-width: 200px;
+      opacity: 1;
+      padding: 0 2px 0 6px;
+    }
+
+    #nw-toggle-panel .nw-sep {
+      width: 1px;
+      height: 18px;
+      background: rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+    html.light #nw-toggle-panel .nw-sep {
+      background: rgba(0,0,0,0.08);
+    }
+
+    #nw-toggle-panel button {
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    #nw-theme-btn { width: 32px; }
+    #nw-lang-btn { width: auto; padding: 0 10px; }
+    #nw-toggle-panel button:hover {
+      background: rgba(34,197,94,0.15);
+      color: #4ade80;
+    }
+    html.light #nw-toggle-panel button { color: #64748b; }
+    html.light #nw-toggle-panel button:hover {
+      background: rgba(34,197,94,0.1);
+      color: #16a34a;
+    }
+
+    
+    @media (max-width: 768px) {
+      #nw-toggles { bottom: 14px; left: 14px; right: auto; }
+      #nw-toggle-trigger { width: 36px; height: 36px; }
+      #nw-toggle-panel button { height: 28px; }
+      #nw-theme-btn { width: 28px; }
+    }
+
+    /* ===== RTL Adjustments ===== */
+    html[dir="rtl"] #nw-toggles { left: auto; right: 16px; flex-direction: row; }
+    html[dir="rtl"] #nw-toggles.expanded #nw-toggle-panel { padding: 0 6px 0 2px; }
+    @media (max-width: 768px) {
+      html[dir="rtl"] #nw-toggles { right: 14px; left: auto; }
+    }
+    html[dir="rtl"] .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-right: 0; }
+    html[dir="rtl"] .gap-2 { gap: 0.5rem; }
+    html[dir="rtl"] .text-left { text-align: right; }
+    html[dir="rtl"] .text-right { text-align: left; }
+    html[dir="rtl"] .ml-auto { margin-left: 0; margin-right: auto; }
+    html[dir="rtl"] .mr-auto { margin-right: 0; margin-left: auto; }
+
+    /* Hamburger menu — right-side drawer */
+    @keyframes mobMenuSlideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    @keyframes mobMenuSlideOut { from { transform: translateX(0); } to { transform: translateX(100%); } }
+    @keyframes mobOverlayIn { from { opacity: 0; } to { opacity: 1; } }
+    body.has-mob-menu #nw-toggles { display: none !important; }
+    #mob-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 9998; animation: mobOverlayIn 0.2s ease; }
+
+    /* ===== Mobile Compact Mode (<=768px) ===== */
+    @media (max-width: 768px) {
+      /* Disable desktop FX on mobile */
+      #fx-cursor, #fx-glow, #fx-canvas, .fx-orb { display: none !important; }
+      body::after { display: none !important; }
+
+      /* Mobile header readability */
+      header.lg\:hidden, header { height: 52px !important; padding-left: 12px !important; padding-right: 12px !important; }
+      header .font-bold { font-size: 13px !important; }
+      header img { width: 24px !important; height: 24px !important; }
+
+      /* Better touch targets in mobile drawer */
+      .mobile-nav { padding: 8px 10px !important; font-size: 12px !important; min-height: 40px !important; }
+
+      /* Main content spacing on mobile */
+      main .px-5, main .lg\:px-8 { padding-left: 10px !important; padding-right: 10px !important; }
+      main .pt-3 { padding-top: 8px !important; }
+      main .pb-3 { padding-bottom: 8px !important; }
+
+      /* Page titles */
+      h1.text-lg { font-size: 14px !important; }
+      h1.text-2xl { font-size: 16px !important; }
+
+      /* Ticket list & detail - full screen toggle */
+      .mob-hide { display: none !important; }
+      .mob-fullscreen {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 40 !important;
+        border-radius: 0 !important;
+        border: none !important;
+        margin: 0 !important;
+        max-height: 100dvh !important;
+        height: 100dvh !important;
+      }
+
+      /* Ticket header/content on mobile */
+      #ticket-header { padding: 10px 12px !important; gap: 8px !important; }
+      #ticket-header h2 { font-size: 13px !important; max-width: 170px !important; }
+      #ticket-countdown-bar { padding: 6px 12px !important; }
+      #ticket-rating-area { padding: 8px 12px !important; }
+      #ticket-thread { padding: 10px 12px !important; }
+
+      /* Compact ticket cards */
+      .ticket-item { padding: 8px 10px !important; }
+      .ticket-item .text-sm { font-size: 11px !important; }
+      .ticket-item .text-xs { font-size: 10px !important; }
+      .ticket-item .text-\[11px\] { font-size: 9px !important; }
+
+      /* Compact tab buttons */
+      .tab-btn, .section-tab { padding: 5px 10px !important; font-size: 11px !important; }
+      .section-tab .section-count { font-size: 9px !important; }
+      .section-tab .w-2 { width: 5px !important; height: 5px !important; }
+
+      /* Stat cards */
+      .shadow-card { padding: 10px !important; }
+      .shadow-card .text-3xl { font-size: 20px !important; }
+      .shadow-card .text-xs { font-size: 9px !important; }
+      .shadow-card .w-9 { width: 28px !important; height: 28px !important; }
+
+      /* Compact message bubbles */
+      .msg-wrap { gap: 6px !important; }
+      .msg-wrap img.rounded-full { width: 24px !important; height: 24px !important; }
+      .msg-wrap .max-w-\[75\%\] { max-width: 88% !important; }
+      .msg-wrap .rounded-xl { padding: 6px 10px !important; }
+      .msg-wrap .text-xs { font-size: 10px !important; }
+      .msg-wrap .text-\[11px\] { font-size: 10px !important; }
+      .msg-wrap .text-\[13px\] { font-size: 12px !important; }
+      .msg-bubble { font-size: 13px !important; line-height: 1.5 !important; }
+      #ticket-thread, #admin-thread { padding: 10px !important; }
+      #ticket-thread .space-y-2\.5 > * + *, .space-y-2\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 4px !important; }
+      #admin-thread .space-y-3 > * + *, .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 4px !important; }
+
+      /* Compact action buttons on messages */
+      .msg-actions, .adm-msg-actions { padding: 1px 2px !important; gap: 0 !important; }
+      .msg-actions button, .adm-msg-actions button { width: 28px !important; height: 28px !important; padding: 4px !important; }
+      .msg-actions svg, .adm-msg-actions svg { width: 14px !important; height: 14px !important; }
+
+      /* Reply area: sticky + safe area + larger controls */
+      #ticket-reply-area, #admin-reply-area {
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 6 !important;
+        background: rgba(13,17,23,0.92) !important;
+        backdrop-filter: blur(10px) !important;
+        padding-bottom: max(6px, env(safe-area-inset-bottom)) !important;
+      }
+      #ticket-reply-area .flex, #admin-reply-area .flex { padding: 8px 10px !important; gap: 8px !important; }
+      #ticket-reply-area img { width: 24px !important; height: 24px !important; }
+      #reply-content, #admin-reply-content { font-size: 14px !important; padding: 10px 12px !important; min-height: 42px !important; }
+      #btn-send-reply, #btn-admin-reply { min-width: 42px !important; min-height: 42px !important; padding: 10px 12px !important; }
+      #btn-send-reply svg, #btn-admin-reply svg { width: 16px !important; height: 16px !important; }
+      #btn-dash-upload, #btn-admin-upload { min-width: 40px !important; min-height: 40px !important; padding: 8px !important; }
+      #btn-dash-upload svg, #btn-admin-upload svg { width: 16px !important; height: 16px !important; }
+
+      /* Compact ticket header */
+      #ticket-header, #admin-ticket-header { padding: 10px 12px !important; }
+      #ticket-header h2, #admin-header-info h2 { font-size: 13px !important; }
+      #admin-ticket-header .flex.items-center.gap-2 button { padding: 6px 10px !important; font-size: 11px !important; min-height: 34px !important; }
+      #admin-ticket-header .flex.items-center.gap-2 button svg { width: 14px !important; height: 14px !important; }
+
+      /* Back button for mobile full-screen chat */
+      .mob-back-btn {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        margin-right: 8px;
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .mob-back-btn:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+
+      /* New ticket form compact */
+      #new-ticket-form .p-6, #step-category, #step-details { padding: 14px !important; }
+      .category-card { padding: 14px !important; }
+      .category-card .w-11 { width: 36px !important; height: 36px !important; }
+      .category-card .mb-4 { margin-bottom: 8px !important; }
+      .category-card h3 { font-size: 13px !important; }
+      .category-card p { font-size: 11px !important; }
+
+      /* Compact buttons */
+      .btn-glow { padding: 8px 14px !important; font-size: 13px !important; }
+      .btn-glow svg { width: 14px !important; height: 14px !important; }
+
+      /* Modals compact */
+      .fixed.inset-0.z-50 .max-w-md, .fixed.inset-0.z-50 .max-w-sm { max-width: calc(100vw - 24px) !important; }
+      .fixed.inset-0.z-50 .p-6 { padding: 14px !important; }
+      .fixed.inset-0.z-50 h3 { font-size: 14px !important; }
+
+      /* ===== Toast Notifications ===== */
+      #nw-toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+      html[dir="rtl"] #nw-toast-container { right: auto; left: 20px; }
+      .nw-toast {
+        pointer-events: auto; display: flex; align-items: center; gap: 12px;
+        padding: 14px 20px; border-radius: 16px; font-size: 13px; font-weight: 500; color: #fff;
+        backdrop-filter: blur(20px) saturate(1.6); -webkit-backdrop-filter: blur(20px) saturate(1.6);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.06) inset;
+        max-width: 400px; word-break: break-word;
+        transform: translateY(-8px) scale(0.96); opacity: 0;
+        animation: nwToastIn 0.45s cubic-bezier(0.16,1,0.3,1) forwards;
+      }
+      .nw-toast.removing { animation: nwToastOut 0.35s cubic-bezier(0.4,0,1,1) forwards; }
+      .nw-toast-success { background: linear-gradient(135deg, rgba(22,163,74,0.88), rgba(16,120,56,0.92)); border: 1px solid rgba(74,222,128,0.25); }
+      .nw-toast-error { background: linear-gradient(135deg, rgba(220,38,38,0.88), rgba(180,28,28,0.92)); border: 1px solid rgba(248,113,113,0.25); }
+      .nw-toast-warning { background: linear-gradient(135deg, rgba(202,138,4,0.88), rgba(160,110,0,0.92)); border: 1px solid rgba(250,204,21,0.25); }
+      .nw-toast-info { background: linear-gradient(135deg, rgba(37,99,235,0.88), rgba(28,76,190,0.92)); border: 1px solid rgba(96,165,250,0.25); }
+      .nw-toast svg { flex-shrink: 0; width: 20px !important; height: 20px !important; min-width: 20px; max-width: 20px; opacity: 0.9; }
+      .nw-toast span:not(.nw-toast-close) { line-height: 1.4; }
+      .nw-toast-close { margin-left: auto; cursor: pointer; opacity: 0.5; transition: opacity 0.2s, transform 0.2s; padding: 4px; font-size: 16px; line-height: 1; border-radius: 6px; }
+      .nw-toast-close:hover { opacity: 1; transform: scale(1.15); background: rgba(255,255,255,0.1); }
+      html[dir="rtl"] .nw-toast-close { margin-left: 0; margin-right: auto; }
+      html.light .nw-toast-success { background: linear-gradient(135deg, rgba(22,163,74,0.95), rgba(16,120,56,0.97)); }
+      html.light .nw-toast-error { background: linear-gradient(135deg, rgba(220,38,38,0.95), rgba(180,28,28,0.97)); }
+      html.light .nw-toast-warning { background: linear-gradient(135deg, rgba(202,138,4,0.95), rgba(160,110,0,0.97)); }
+      html.light .nw-toast-info { background: linear-gradient(135deg, rgba(37,99,235,0.95), rgba(28,76,190,0.97)); }
+      .nw-toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: rgba(255,255,255,0.35); border-radius: 0 0 16px 16px; animation: nwToastProgress 4s linear forwards; }
+      @keyframes nwToastProgress { from { width: 100%; } to { width: 0%; } }
+      @keyframes nwToastIn { from { opacity: 0; transform: translateY(-8px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+      @keyframes nwToastOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-12px) scale(0.94); } }
+      html[dir="rtl"] .nw-toast { animation-name: nwToastIn; }
+      html[dir="rtl"] .nw-toast.removing { animation-name: nwToastOut; }
+      @media (max-width: 768px) {
+        #nw-toast-container { top: auto; bottom: 16px; right: 10px; left: 10px; }
+        html[dir="rtl"] #nw-toast-container { right: 10px; }
+        .nw-toast { max-width: 100%; font-size: 12px; padding: 12px 16px; border-radius: 14px; }
+      }
+
+      /* Compact search inputs */
+      #search-q, #category-filter { padding-top: 6px !important; padding-bottom: 6px !important; font-size: 11px !important; }
+      #category-filter { min-width: 100px !important; }
+
+      /* Compact gap in ticket grid */
+      .grid.grid-cols-1 { gap: 6px !important; }
+
+      /* Overview stats compact */
+      #view-overview .grid { gap: 8px !important; }
+      #view-overview .p-5 { padding: 10px !important; }
+
+      /* Rating area compact */
+      #ticket-rating-area { padding: 6px 10px !important; }
+      #ticket-rating-area .text-sm { font-size: 11px !important; }
+
+      /* Product combo dropdown */
+      #product-dropdown { max-height: 200px !important; }
+
+      /* Table cells compact */
+      table td, table th { padding: 6px 8px !important; font-size: 11px !important; }
+
+      /* Points/Exchange views compact */
+      #view-points, #view-exchange, #view-orders, #view-audit, #view-products, #view-users { padding: 10px !important; }
+      #view-points h1, #view-exchange h1, #view-orders h1, #view-audit h1, #view-products h1, #view-users h1 { font-size: 16px !important; }
+
+      /* Countdown bar compact */
+      #ticket-countdown-bar, #admin-countdown-bar { padding: 4px 10px !important; }
+    }
+  </style>
 </head>
-<body>
-<h1 style="color:white;text-align:center;">Welcome to Dashboard</h1>
+<body class="h-full bg-surface-soft text-slate-200 antialiased">
+  <!-- FX layers -->
+  <div id="fx-cursor"></div>
+  <div id="fx-glow"></div>
+  <canvas id="fx-canvas"></canvas>
+
+  <!-- Floating Settings Control -->
+  <div id="nw-toggles">
+    <button id="nw-toggle-trigger" type="button" aria-label="Settings">
+      <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    </button>
+    <div id="nw-toggle-panel">
+      <div class="nw-sep"></div>
+      <button id="nw-theme-btn" type="button" aria-label="Toggle theme">
+        <svg id="nw-icon-sun" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+        <svg id="nw-icon-moon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+      </button>
+      <div class="nw-sep"></div>
+      <button id="nw-lang-btn" type="button" aria-label="Toggle language">
+        <span class="text-[11px] font-bold leading-none whitespace-nowrap">العربية</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="nw-toast-container"></div>
+  
+  <div class="h-screen flex overflow-hidden">
+
+    <aside class="hidden lg:flex flex-col w-[240px] flex-shrink-0 bg-surface border-r border-white/5">
+      <div class="h-12 flex items-center gap-2.5 px-4 border-b border-white/5 flex-shrink-0">
+        <img src="https://cdn.rmz.gg/store/logo/ca1c1aa1fe5f4e3357522d5580b2a52efae79d99.png" alt="NitWit" class="w-8 h-8 rounded-lg object-cover" />
+        <span class="text-[15px] font-bold text-white tracking-tight">7rz</span>
+      </div>
+
+      <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <div class="sidebar-link active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300">
+          <svg class="w-[18px] h-[18px] text-slate-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+          <span data-i18n="my_tickets">My Tickets</span>
+        </div>
+      </nav>
+
+      <div class="border-t border-white/5 flex-shrink-0">
+        <div class="px-4 py-4 flex items-center gap-3">
+          <img src="https://cdn.discordapp.com/avatars/1135579532187926589/feafcf71362c530d8152570127b2040a.png?size=64" alt="avatar" class="w-9 h-9 rounded-full ring-2 ring-white/10 object-cover flex-shrink-0" />
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-semibold text-white truncate">blackhv1</p>
+            <p class="text-[11px] text-slate-500 truncate">@blackhv1</p>
+          </div>
+        </div>
+        <div class="px-3 pb-3">
+          <a href="#" onclick="fetch('/auth/logout',{method:'POST',credentials:'include'}).then(function(){window.location='/login'});return false;" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+            <span data-i18n="sign_out">Sign out</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0">
+      <header class="lg:hidden flex items-center justify-between px-3 h-10 bg-surface border-b border-white/5 flex-shrink-0">
+        <div class="flex items-center gap-1.5">
+          <img src="https://cdn.discordapp.com/avatars/1135579532187926589/feafcf71362c530d8152570127b2040a.png?size=64" alt="avatar" class="w-6 h-6 rounded-full ring-1 ring-white/10" />
+          <span class="font-bold text-white text-xs">blackhv1</span>
+        </div>
+        <a href="#" onclick="fetch('/auth/logout',{method:'POST',credentials:'include'}).then(function(){window.location='/login'});return false;" class="text-[10px] text-slate-500 hover:text-slate-300 transition-colors" data-i18n="sign_out">Sign out</a>
+      </header>
+
+      <main class="flex-1 overflow-hidden bg-surface-soft flex flex-col">
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <div class="flex-shrink-0 px-4 lg:px-6 pt-2 lg:pt-2.5 pb-1.5">
+            <p id="ticket-limit-note" class="hidden mb-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2"></p>
+            <div class="flex items-center justify-between gap-3">
+              <h1 class="text-sm font-bold text-white tracking-tight" data-i18n="my_tickets">My Tickets</h1>
+              <button type="button" id="btn-new-ticket" class="btn-glow relative inline-flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-xs font-medium px-3 py-2 rounded-lg transition-all duration-200 shadow-lg shadow-green-500/20 hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:translate-y-0">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <span data-i18n="new_ticket">New Ticket</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 px-4 lg:px-6 pb-2 lg:pb-2.5 min-h-0 overflow-hidden">
+            <div id="dash-list-col" class="lg:col-span-4 xl:col-span-3 bg-surface rounded-2xl border border-white/5 shadow-card overflow-hidden flex flex-col min-h-0">
+              <div class="px-3 py-2 border-b border-white/5">
+                <input type="text" id="dash-ticket-search" class="w-full border border-white/10 rounded-lg px-3 py-1.5 text-xs bg-dm-input text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-green-500/30" placeholder="Search tickets..." data-i18n-ph="search_my_tickets" />
+              </div>
+              <div id="ticket-list" class="flex-1 overflow-y-auto">
+                <div class="p-3 space-y-3">
+                  <div class="skeleton skeleton-card h-20"></div>
+                  <div class="skeleton skeleton-card h-20"></div>
+                  <div class="skeleton skeleton-card h-20"></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="dash-detail-col" class="lg:col-span-8 xl:col-span-9 flex flex-col min-h-0">
+              <div id="ticket-empty" class="flex-1 bg-surface rounded-2xl border border-white/5 shadow-card flex items-center justify-center">
+                <div class="text-center p-8">
+                  <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500/10 to-blue-500/10 flex items-center justify-center mx-auto mb-5">
+                    <svg class="w-10 h-10 text-green-400/60" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+                  </div>
+                  <p class="text-slate-400 text-sm font-medium mb-1" data-i18n="select_ticket">Select a ticket or create a new one</p>
+                  <p class="text-slate-600 text-xs">${_t('no_tickets','No tickets yet') === _t('select_ticket','') ? '' : ''}</p>
+                </div>
+              </div>
+
+              <div id="ticket-detail" class="hidden flex-1 bg-surface rounded-2xl border border-white/5 shadow-card flex flex-col overflow-hidden min-h-0">
+                <div id="ticket-header" class="flex-shrink-0 px-3.5 py-2 border-b border-white/5 bg-surface flex items-center gap-2"></div>
+                <div id="ticket-countdown-bar" class="hidden px-3.5 py-1.5 bg-amber-500/10 border-b border-amber-500/20 flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <span id="ticket-countdown-text" class="text-[11px] font-medium text-amber-300"></span>
+                </div>
+                <div id="ticket-rating-area" class="hidden px-3.5 py-2 border-b border-white/5"></div>
+                <div id="ticket-thread" class="flex-1 overflow-y-auto px-3.5 py-3 space-y-2"></div>
+                <div id="dash-typing-bar" class="hidden px-3.5 py-1.5 border-t border-white/5 bg-surface/50">
+                  <span class="text-xs text-slate-400 italic" id="dash-typing-text"></span>
+                </div>
+                <div id="ticket-reply-area" class="flex-shrink-0 border-t border-white/5 bg-surface">
+                  <div id="dash-reply-indicator" class="hidden px-3 pt-1.5 pb-0">
+                    <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/5 border border-green-500/15">
+                      <svg class="w-3 h-3 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>
+                      <div class="flex-1 min-w-0"><span class="text-[11px] text-green-400 font-medium" id="dash-reply-to-name"></span><p class="text-[11px] text-slate-400 truncate" id="dash-reply-to-preview"></p></div>
+                      <button type="button" id="dash-reply-cancel" class="p-0.5 rounded hover:bg-white/10 transition-colors flex-shrink-0"><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                    </div>
+                  </div>
+                  <div class="flex gap-2 items-end px-3 py-2">
+                    <textarea id="reply-content" class="flex-1 border border-white/10 rounded-xl px-3 py-2 text-[13px] resize-none focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500/50 transition-all placeholder:text-slate-500 bg-dm-input text-slate-200 leading-normal" rows="1" placeholder="Type your message..." data-i18n-ph="type_message"></textarea>
+                    <input type="file" id="dash-img-input" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf,text/plain" class="hidden" />
+                    <button type="button" id="btn-dash-upload" title="Upload image" data-i18n-title="upload_image" class="self-end text-slate-400 hover:text-green-400 p-2 rounded-lg hover:bg-white/5 transition-all">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.41a2.25 2.25 0 013.182 0l2.909 2.91m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+                    </button>
+                    <button type="button" id="btn-send-reply" class="self-end bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-2 rounded-lg transition-all shadow-md shadow-green-500/20">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="new-ticket-form" class="hidden flex-1 bg-surface rounded-2xl border border-white/5 shadow-card overflow-y-auto fade-in">
+                <div id="step-category" class="p-6">
+                  <h2 class="text-lg font-semibold text-white mb-1" data-i18n="create_new_ticket">Create New Ticket</h2>
+                  <p class="text-sm text-slate-400 mb-6" data-i18n="choose_category">Choose a category that best describes your request.</p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <button type="button" data-category="support" class="category-card group relative text-left p-5 rounded-2xl border-2 border-white/10 bg-dm-elevated hover:border-green-500/40 hover:shadow-lg hover:shadow-green-500/5 transition-all duration-200 cursor-pointer">
+                      <div class="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
+                        <svg class="w-5.5 h-5.5 text-blue-400" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                      </div>
+                      <h3 class="text-sm font-semibold text-white mb-1" data-i18n="tech_support">Technical Support</h3>
+                      <p class="text-xs text-slate-400 leading-relaxed" data-i18n="tech_support_desc">For technical issues and feedback</p>
+                      <div class="absolute top-3 right-3 w-5 h-5 rounded-full border-2 border-white/20 group-hover:border-green-500/50 transition-colors flex items-center justify-center">
+                        <div class="cat-check hidden w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      </div>
+                    </button>
+                    <button type="button" data-category="inquiry" class="category-card group relative text-left p-5 rounded-2xl border-2 border-white/10 bg-dm-elevated hover:border-green-500/40 hover:shadow-lg hover:shadow-green-500/5 transition-all duration-200 cursor-pointer">
+                      <div class="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
+                        <svg class="w-5.5 h-5.5 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 9.75h9m-9 3h6m-8.25 6.75L3 21l1.5-3.75A6.75 6.75 0 013 12a6.75 6.75 0 016.75-6.75h4.5A6.75 6.75 0 0121 12a6.75 6.75 0 01-6.75 6.75h-9z"/></svg>
+                      </div>
+                      <h3 class="text-sm font-semibold text-white mb-1" data-i18n="inquiry">Inquiry</h3>
+                      <p class="text-xs text-slate-400 leading-relaxed" data-i18n="inquiry_desc">For general questions and inquiries</p>
+                      <div class="absolute top-3 right-3 w-5 h-5 rounded-full border-2 border-white/20 group-hover:border-green-500/50 transition-colors flex items-center justify-center">
+                        <div class="cat-check hidden w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      </div>
+                    </button>
+                    <button type="button" data-category="business" class="category-card group relative text-left p-5 rounded-2xl border-2 border-white/10 bg-dm-elevated hover:border-green-500/40 hover:shadow-lg hover:shadow-green-500/5 transition-all duration-200 cursor-pointer">
+                      <div class="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4 group-hover:bg-amber-500/20 transition-colors">
+                        <svg class="w-5.5 h-5.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 7.5h16.5a.75.75 0 01.75.75v9a.75.75 0 01-.75.75H3.75a.75.75 0 01-.75-.75v-9a.75.75 0 01.75-.75z"/><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5v-1.5A2.25 2.25 0 0110.5 3.75h3A2.25 2.25 0 0115.75 6v1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18"/></svg>
+                      </div>
+                      <h3 class="text-sm font-semibold text-white mb-1" data-i18n="business">Business</h3>
+                      <p class="text-xs text-slate-400 leading-relaxed" data-i18n="business_desc">For reselling, media, and deals</p>
+                      <div class="absolute top-3 right-3 w-5 h-5 rounded-full border-2 border-white/20 group-hover:border-green-500/50 transition-colors flex items-center justify-center">
+                        <div class="cat-check hidden w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      </div>
+                    </button>
+                  </div>
+                  <div class="mt-6 flex gap-3 justify-end">
+                    <button type="button" id="btn-cancel-ticket" class="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 bg-white/5 hover:bg-white/10 transition-colors" data-i18n="cancel">Cancel</button>
+                    <button type="button" id="btn-next-step" disabled class="px-6 py-2.5 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all shadow-md shadow-green-500/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none" data-i18n="next">Next</button>
+                  </div>
+                </div>
+
+                <div id="step-details" class="hidden p-6">
+                  <button type="button" id="btn-back-step" class="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors mb-4">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                    <span data-i18n="back">Back</span>
+                  </button>
+                  <div id="selected-category-badge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium mb-4"></div>
+                  <h2 class="text-lg font-semibold text-white mb-1" data-i18n="ticket_details">Ticket Details</h2>
+                  <p class="text-sm text-slate-400 mb-5" data-i18n="ticket_details_desc">Give your ticket a clear title and describe your issue in Arabic or English.</p>
+                  <div class="space-y-4">
+                    <div id="field-product">
+                      <label class="block text-sm font-medium text-slate-300 mb-1.5" data-i18n="product">Product</label>
+                      <div class="relative" id="product-combo-wrap">
+                        <div id="product-combo-trigger" class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm bg-dm-input text-slate-200 cursor-pointer flex items-center justify-between hover:border-white/20 transition-all">
+                          <span id="product-combo-label" class="text-slate-500" data-i18n="select_product">Select a product...</span>
+                          <svg class="w-4 h-4 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                        </div>
+                        <input type="hidden" id="selected-product-id" value="" />
+                        <div id="product-dropdown" class="hidden absolute top-full left-0 right-0 mt-1.5 bg-dm-elevated border border-white/10 rounded-xl shadow-2xl z-30 max-h-64 overflow-hidden">
+                          <div class="p-2 border-b border-white/5">
+                            <input type="text" id="product-search" class="w-full border border-white/10 rounded-lg px-3 py-2 text-sm bg-dm-input text-slate-200 focus:outline-none focus:ring-2 focus:ring-green-500/30 placeholder:text-slate-500" placeholder="Search products..." data-i18n-ph="search_products" />
+                          </div>
+                          <div id="product-options" class="overflow-y-auto max-h-48"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="field-order-number" class="hidden">
+                      <label for="new-ticket-order" class="block text-sm font-medium text-slate-300 mb-1.5" data-i18n="order_number">Order Number</label>
+                      <input type="text" id="new-ticket-order" class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500/50 transition-all placeholder:text-slate-500 bg-dm-input text-slate-200" placeholder="Enter your order number..." data-i18n-ph="order_placeholder" />
+                      <div id="order-verify-status" class="mt-1.5 text-xs hidden"></div>
+                    </div>
+                    <div>
+                      <label for="new-ticket-title" class="block text-sm font-medium text-slate-300 mb-1.5" data-i18n="title">Title</label>
+                      <input type="text" id="new-ticket-title" class="w-full border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500/50 transition-all placeholder:text-slate-500 bg-dm-input text-slate-200" placeholder="Brief summary of your issue..." maxlength="200" data-i18n-ph="title_placeholder" />
+                    </div>
+                    <input type="hidden" id="new-ticket-message" value="" />
+                    <div id="form-error-msg" class="hidden text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5"></div>
+                  </div>
+                  <div class="mt-5 flex gap-3 justify-end">
+                    <button type="button" id="btn-cancel-ticket-2" class="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 bg-white/5 hover:bg-white/10 transition-colors" data-i18n="cancel">Cancel</button>
+                    <button type="button" id="btn-submit-ticket" class="btn-glow relative px-6 py-2.5 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all shadow-md shadow-green-500/20" data-i18n="submit_ticket">Submit Ticket</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="edit-msg-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="bg-dm-elevated rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 border border-white/10">
+      <h3 class="text-base font-semibold text-white mb-3" data-i18n="edit_message">Edit Message</h3>
+      <input type="hidden" id="edit-msg-id" />
+      <textarea id="edit-msg-content" class="w-full h-32 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-green-500/50 resize-none"></textarea>
+      <div class="flex justify-end gap-2 mt-4">
+        <button id="edit-msg-cancel" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors" data-i18n="cancel">Cancel</button>
+        <button id="edit-msg-save" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-500 rounded-lg transition-colors" data-i18n="save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="img-lightbox" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md cursor-zoom-out" onclick="this.classList.add('hidden')">
+    <button type="button" aria-label="Close" class="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10" onclick="event.stopPropagation();document.getElementById('img-lightbox').classList.add('hidden')">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <img id="img-lightbox-src" src="" class="max-w-[90vw] max-h-[90vh] rounded-2xl shadow-2xl object-contain" onclick="event.stopPropagation()" />
+  </div>
+
+  <script>
+    var API = '/api';
+    var currentTicketId = null;
+    var allTicketsCache = [];
+    var countdownInterval = null;
+    var selectedCategory = null;
+    var dashReplyToId = null;
+    var allProducts = [];
+    var selectedProductId = null;
+    var msgPollInterval = null;
+    var lastMsgSignature = '';
+    var _ticketDetailCache = {};
+    var _ticketDetailCacheTs = {};
+    var _ticketDetailInFlight = {};
+    var _dashTicketsSig = '';
+    var _openTicketSeq = 0;
+    var _openTicketAbort = null;
+    function prefetchTicketDetail(id) {
+      if (!id || _ticketDetailInFlight[id]) return;
+      var now = Date.now();
+      if (_ticketDetailCache[id] && now - (_ticketDetailCacheTs[id] || 0) < 12000) return;
+      _ticketDetailInFlight[id] = fetch(API + '/ticket/' + id + '?poll=1', { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (!d || d.error) return;
+          _ticketDetailCache[id] = d;
+          _ticketDetailCacheTs[id] = Date.now();
+        })
+        .catch(function(){})
+        .finally(function() { delete _ticketDetailInFlight[id]; });
+    }
+    function autoScrollThreadBottom(thread) {
+      if (!thread) return;
+      function doScroll() { thread.scrollTop = thread.scrollHeight; }
+      doScroll();
+      requestAnimationFrame(doScroll);
+      setTimeout(doScroll, 120);
+      setTimeout(doScroll, 320);
+      var imgs = thread.querySelectorAll('img');
+      for (var i = 0; i < imgs.length; i++) {
+        var im = imgs[i];
+        if (!im.complete) {
+          im.addEventListener('load', doScroll, { once: true });
+          im.addEventListener('error', doScroll, { once: true });
+        }
+      }
+    }
+
+    var MY_AVATAR = 'https://cdn.discordapp.com/avatars/1135579532187926589/feafcf71362c530d8152570127b2040a.png?size=64';
+    var MY_USERNAME = 'blackhv1';
+    var MY_DISCORD_ID = '1135579532187926589';
+    var MY_ADMIN_ROLE = null;
+    var STORE_LOGO = 'https://cdn.rmz.gg/store/logo/ca1c1aa1fe5f4e3357522d5580b2a52efae79d99.png';
+
+    function showConfirmDialog(message, callback) {
+      var m = document.getElementById('generic-confirm-modal');
+      if (!m) {
+        var d = document.createElement('div'); d.id = 'generic-confirm-modal'; d.className = 'hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm';
+        d.innerHTML = '<div class="bg-dm-elevated rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 border border-white/10"><div class="flex items-center gap-4 mb-5"><div class="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center flex-shrink-0"><svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg></div><p id="gcm-msg" class="text-sm text-white"></p></div><div class="flex gap-2 justify-end"><button id="gcm-cancel" class="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 bg-white/5 hover:bg-white/10 transition-colors">' + _t('cancel','Cancel') + '</button><button id="gcm-ok" class="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-green-600 hover:bg-green-500 rounded-xl transition-colors shadow-md">' + _t('confirm','Confirm') + '</button></div></div>';
+        document.body.appendChild(d); m = d;
+      }
+      document.getElementById('gcm-msg').textContent = message;
+      m.classList.remove('hidden');
+      var okBtn = document.getElementById('gcm-ok');
+      var cancelBtn = document.getElementById('gcm-cancel');
+      function cleanup() { m.classList.add('hidden'); okBtn.replaceWith(okBtn.cloneNode(true)); cancelBtn.replaceWith(cancelBtn.cloneNode(true)); }
+      document.getElementById('gcm-ok').addEventListener('click', function() { cleanup(); callback(true); });
+      document.getElementById('gcm-cancel').addEventListener('click', function() { cleanup(); callback(false); });
+    }
+
+    var CATEGORY_META = {
+      support: { label: 'Technical Support', labelAr: 'الدعم الفني', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M10.34 3.94a1.5 1.5 0 012.12 0l1.6 1.6a1.5 1.5 0 001.06.44h2.26a1.5 1.5 0 011.5 1.5v2.26a1.5 1.5 0 00.44 1.06l1.6 1.6a1.5 1.5 0 010 2.12l-1.6 1.6a1.5 1.5 0 00-.44 1.06v2.26a1.5 1.5 0 01-1.5 1.5h-2.26a1.5 1.5 0 00-1.06.44l-1.6 1.6a1.5 1.5 0 01-2.12 0l-1.6-1.6a1.5 1.5 0 00-1.06-.44H6.6a1.5 1.5 0 01-1.5-1.5v-2.26a1.5 1.5 0 00-.44-1.06l-1.6-1.6a1.5 1.5 0 010-2.12l1.6-1.6a1.5 1.5 0 00.44-1.06V7.48a1.5 1.5 0 011.5-1.5h2.26a1.5 1.5 0 001.06-.44l1.6-1.6z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 14.25l4.5-4.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 10.5h.008v.008H10.5V10.5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 13.5h.008v.008H13.5V13.5z"/>' },
+      inquiry: { label: 'Inquiry', labelAr: 'استفسار', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 17.25h.008v.008H12v-.008z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 9.53a3.5 3.5 0 116.08 2.37c-.43.66-1.1 1.1-1.77 1.5-.68.4-1.34.88-1.34 1.57v.28"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>' },
+      business: { label: 'Business', labelAr: 'أعمال', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 8.25h16.5a.75.75 0 01.75.75v9a.75.75 0 01-.75.75H3.75a.75.75 0 01-.75-.75V9a.75.75 0 01.75-.75z"/><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 8.25v-1.5A2.25 2.25 0 0110.5 4.5h3A2.25 2.25 0 0115.75 6.75v1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 12.75h18"/>' }
+    };
+    function catLabel(cat) { var m = CATEGORY_META[cat]; if (!m) return ''; return document.documentElement.lang === 'ar' ? m.labelAr : m.label; }
+    function catIcon(cat) { var m = CATEGORY_META[cat]; if (!m || !m.icon) return ''; return '<span class="inline-flex items-center justify-center w-3 h-3"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">' + m.icon + '</svg></span>'; }
+    function categoryBadge(cat) { var m = CATEGORY_META[cat]; if (!m) return ''; return '<span class="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-px rounded-full border ' + m.color + '">' + catIcon(cat) + '<span>' + catLabel(cat) + '</span></span>'; }
+    function getAvatarUrl(discordId, avatarHash) { if (avatarHash) return 'https://cdn.discordapp.com/avatars/' + discordId + '/' + avatarHash + '.png?size=64'; var idx = Number(BigInt(discordId) >> 22n % 6n); return 'https://cdn.discordapp.com/embed/avatars/' + (idx % 6) + '.png'; }
+    var STATUS_I18N = { Open:'status_open', Answered:'status_answered', Closed:'status_closed' };
+    function statusBadge(s) { var c = { Open: 'bg-blue-500/10 text-blue-400 border-blue-500/20', Answered: 'bg-green-500/10 text-green-400 border-green-500/20', Closed: 'bg-slate-500/10 text-slate-400 border-slate-500/20' }; var labels = { Open: _t('status_open','Open'), Answered: _t('status_answered','Answered'), Closed: _t('status_closed','Closed') }; return '<span class="inline-block text-[10px] font-medium px-2 py-px rounded-full border ' + (c[s] || c.Open) + '">' + (labels[s] || s) + '</span>'; }
+    function _t(key,fallback) { try { var T = window._nwT; if (T && T[key]) { return T[key][document.documentElement.lang === 'ar' ? 1 : 0]; } } catch(e){} return fallback; }
+
+    function fmtMsgTime(ts) {
+      if (!ts) return '';
+      var d = new Date(ts.replace(' ', 'T') + (ts.indexOf('Z') === -1 && ts.indexOf('+') === -1 ? 'Z' : ''));
+      if (isNaN(d.getTime())) return esc(ts);
+      var h = d.getHours(), m = d.getMinutes();
+      var ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12; if (h === 0) h = 12;
+      return h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+    }
+    function dateDayKey(ts) {
+      if (!ts) return '';
+      var d = new Date(ts.replace(' ', 'T') + (ts.indexOf('Z') === -1 && ts.indexOf('+') === -1 ? 'Z' : ''));
+      if (isNaN(d.getTime())) return '';
+      return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+    }
+    function dateSeparatorLabel(ts) {
+      var d = new Date(ts.replace(' ', 'T') + (ts.indexOf('Z') === -1 && ts.indexOf('+') === -1 ? 'Z' : ''));
+      if (isNaN(d.getTime())) return '';
+      var now = new Date();
+      var today = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
+      var yest = new Date(now.getTime() - 86400000);
+      var yesterday = yest.getFullYear() + '-' + (yest.getMonth() + 1) + '-' + yest.getDate();
+      var key = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+      if (key === today) return _t('today','Today');
+      if (key === yesterday) return _t('yesterday','Yesterday');
+      return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+    function dateSeparatorHtml(label) {
+      return '<div class="flex items-center gap-3 my-3"><div class="flex-1 h-px bg-white/10"></div><span class="text-[11px] font-medium text-slate-500 whitespace-nowrap">' + label + '</span><div class="flex-1 h-px bg-white/10"></div></div>';
+    }
+
+    function isMobile() { return window.innerWidth <= 768; }
+    function enterMobileChat() {
+      if (!isMobile()) return;
+      var listCol = document.getElementById('dash-list-col');
+      var detailCol = document.getElementById('dash-detail-col');
+      var detail = document.getElementById('ticket-detail');
+      if (listCol) listCol.classList.add('mob-hide');
+      if (detailCol) detailCol.classList.add('mob-fullscreen');
+      if (detail) detail.classList.add('mob-fullscreen');
+    }
+    window.exitMobileChat = function() {
+      currentTicketId = null;
+      stopMsgPolling();
+      var listCol = document.getElementById('dash-list-col');
+      var detailCol = document.getElementById('dash-detail-col');
+      var detail = document.getElementById('ticket-detail');
+      if (listCol) listCol.classList.remove('mob-hide');
+      if (detailCol) detailCol.classList.remove('mob-fullscreen');
+      if (detail) { detail.classList.remove('mob-fullscreen'); detail.classList.add('hidden'); }
+      document.getElementById('ticket-empty').classList.remove('hidden');
+      loadTickets();
+    }
+    function priorityBadge(p) { return p ? '<span class="inline-block text-xs font-medium px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">' + _t('urgent','Urgent') + '</span>' : ''; }
+
+    function setActiveTab(tab) {
+    }
+
+    function renderTicketLimitNotice() {
+      var note = document.getElementById('ticket-limit-note');
+      var btn = document.getElementById('btn-new-ticket');
+      var hasActive = allTicketsCache.some(function(t) { return t.status !== 'Closed'; });
+      btn.disabled = hasActive;
+      if (hasActive) { note.textContent = _t('has_open_ticket','You already have an open ticket. Please wait for it to be resolved or closed before creating a new one.'); note.classList.remove('hidden'); }
+      else { note.classList.add('hidden'); }
+    }
+
+    function formatCountdown(deleteAt) { var r = new Date(deleteAt).getTime() - Date.now(); if (r <= 0) return null; return Math.floor(r/3600000) + _t('h_unit','h') + ' ' + Math.floor((r%3600000)/60000) + _t('m_unit','m') + ' ' + Math.floor((r%60000)/1000) + _t('s_unit','s'); }
+    function countdownBadge(deleteAt) { if (!deleteAt) return ''; var t = formatCountdown(deleteAt); return t ? '<span class="text-xs text-amber-400 font-medium">' + t + '</span>' : '<span class="text-xs text-red-400 font-medium">' + _t('deleted','Deleted') + '</span>'; }
+    function lastReplyIndicator(t) {
+      if (!t || !t.lastReplyFrom) return '';
+      var isAdmin = t.lastReplyFrom === 'admin';
+      var label = isAdmin ? _t('admin_replied', 'Admin replied') : _t('waiting_for_support', 'Waiting for support');
+      var icon = isAdmin
+        ? '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>'
+        : '<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+      var cls = isAdmin ? 'text-emerald-300/90' : 'text-amber-300/90';
+      return '<div class="mt-1 flex items-center gap-1 text-[11px] ' + cls + '">' + icon + '<span>' + esc(label) + '</span></div>';
+    }
+    function startCountdown(deleteAt) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      var bar = document.getElementById('ticket-countdown-bar'), text = document.getElementById('ticket-countdown-text');
+      if (!deleteAt) { bar.classList.add('hidden'); return; }
+      bar.classList.remove('hidden');
+      function update() { var t = formatCountdown(deleteAt); if (!t) { text.textContent = _t('ticket_deleted','This ticket has been deleted.'); clearInterval(countdownInterval); loadTickets(); return; } text.textContent = _t('ticket_delete_in','This ticket will be deleted in') + ' ' + t; }
+      update(); countdownInterval = setInterval(update, 1000);
+    }
+
+    function renderFilteredTickets(tickets) {
+      var list = document.getElementById('ticket-list');
+      var q = (document.getElementById('dash-ticket-search').value || '').trim().toLowerCase();
+      var filtered = tickets;
+      if (q) {
+        filtered = tickets.filter(function(t) {
+          var title = (t.title || '').toLowerCase();
+          var id = String(t.id);
+          var cat = (t.category || '').toLowerCase();
+          return title.indexOf(q) !== -1 || id.indexOf(q) !== -1 || cat.indexOf(q) !== -1;
+        });
+      }
+      filtered.sort(function(a, b) {
+        var aOpen = a.status !== 'Closed' ? 0 : 1;
+        var bOpen = b.status !== 'Closed' ? 0 : 1;
+        if (aOpen !== bOpen) return aOpen - bOpen;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+      if (!filtered.length) { list.innerHTML = '<div class="px-5 py-10 text-center"><div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mx-auto mb-3"><svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg></div><p class="text-sm text-slate-500">' + _t('no_tickets_found','No tickets found') + '</p></div>'; return; }
+      list.innerHTML = filtered.map(function(t) {
+        var isActive = t.id === currentTicketId;
+        var isClosed = t.status === 'Closed';
+        var cdBadge = (isClosed && t.delete_at) ? '<div class="mt-1.5">' + countdownBadge(t.delete_at) + '</div>' : '';
+        var title = t.title || (_t('ticket_hash','Ticket #') + t.id);
+        var timeStr = fmtMsgTime(t.closed_at || t.created_at);
+        var rowBg = isActive ? 'bg-green-500/5 border-l-[3px] border-l-green-500' : (isClosed ? 'border-l-[3px] border-l-transparent opacity-60' : 'border-l-[3px] border-l-transparent');
+        return '<div class="ticket-row ticket-card-hover px-4 py-3.5 border-b border-white/5 cursor-pointer hover:bg-white/[0.03] hover:opacity-100 ' + rowBg + '" data-id="' + t.id + '">' +
+          '<div class="flex items-center justify-between gap-2 mb-1"><span class="text-sm font-semibold text-slate-200 truncate flex-1">' + esc(title) + '</span>' + statusBadge(t.status) + '</div>' +
+          '<div class="flex items-center gap-2"><span class="text-[11px] text-slate-500">#' + t.id + '</span>' + categoryBadge(t.category) + '<span class="text-[10px] text-slate-600 ml-auto">' + timeStr + '</span></div>' +
+          lastReplyIndicator(t) +
+          (t.priority ? '<div class="mt-1">' + priorityBadge(true) + '</div>' : '') + cdBadge + '</div>';
+      }).join('');
+      list.querySelectorAll('.ticket-row').forEach(function(row) {
+        row.addEventListener('mouseenter', function() { prefetchTicketDetail(parseInt(row.dataset.id, 10)); });
+        row.addEventListener('click', function() {
+          var id = parseInt(row.dataset.id, 10);
+          if (currentTicketId === id) return;
+          openTicket(id);
+        });
+      });
+    }
+
+    var _ticketsLoadPromise = null;
+    var _ticketsLoadTime = 0;
+    var _ticketsLoadAbort = null;
+    var _ticketsLoadSeq = 0;
+    function ticketsSignature(tickets) {
+      return (tickets || []).map(function(t) {
+        return [
+          t.id,
+          t.status || '',
+          t.delete_at || '',
+          t.priority ? 1 : 0,
+          t.lastReplyFrom || '',
+          t.updated_at || ''
+        ].join(':');
+      }).join('|');
+    }
+
+    function loadTickets(force) {
+      var now = Date.now();
+      if (!force && _ticketsLoadPromise && now - _ticketsLoadTime < 2000) {
+        return _ticketsLoadPromise;
+      }
+      _ticketsLoadTime = now;
+      if (_ticketsLoadAbort) { try { _ticketsLoadAbort.abort(); } catch(e) {} }
+      _ticketsLoadAbort = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      var seq = ++_ticketsLoadSeq;
+      _ticketsLoadPromise = fetch(API + '/tickets?filter=all', {
+        credentials: 'include',
+        signal: _ticketsLoadAbort ? _ticketsLoadAbort.signal : undefined
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        if (seq !== _ticketsLoadSeq) return;
+        var list = document.getElementById('ticket-list');
+        if (data.error) { list.innerHTML = '<div class="p-5 text-red-400 text-sm">' + esc(data.error) + '</div>'; return; }
+        var tickets = data.tickets || [];
+        var sig = ticketsSignature(tickets);
+        var changed = sig !== _dashTicketsSig;
+        allTicketsCache = tickets;
+        renderTicketLimitNotice();
+        if (changed || force) renderFilteredTickets(tickets);
+        _dashTicketsSig = sig;
+      }).catch(function(err) {
+        if (err && err.name === 'AbortError') return;
+        document.getElementById('ticket-list').innerHTML = '<div class="p-5 text-red-400 text-sm">' + _t('failed_to_load','Failed to load') + '</div>';
+      });
+      return _ticketsLoadPromise;
+    }
+
+    function openTicket(id, skipListRefresh, forceFetch, softRefresh) {
+      var wasSameTicket = currentTicketId === id;
+      currentTicketId = id;
+      clearDashReplyTo();
+      document.getElementById('ticket-detail').classList.remove('hidden');
+      document.getElementById('ticket-empty').classList.add('hidden');
+      document.getElementById('new-ticket-form').classList.add('hidden');
+      enterMobileChat();
+      if (!skipListRefresh) renderFilteredTickets(allTicketsCache);
+      var seq = ++_openTicketSeq;
+      if (_openTicketAbort) { try { _openTicketAbort.abort(); } catch(e) {} }
+      _openTicketAbort = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      var cached = _ticketDetailCache[id];
+      var cachedFresh = !forceFetch && cached && (Date.now() - (_ticketDetailCacheTs[id] || 0) < 10000);
+      if (!(softRefresh && wasSameTicket)) {
+        document.getElementById('ticket-thread').innerHTML = '<div class="p-3 space-y-2"><div class="skeleton skeleton-line h-4 w-2/5"></div><div class="skeleton skeleton-line h-16"></div><div class="skeleton skeleton-line h-16 w-11/12"></div></div>';
+      }
+      var detailPromise = cachedFresh
+        ? Promise.resolve(cached)
+        : fetch(API + '/ticket/' + id + (skipListRefresh ? '?poll=1' : ''), { credentials: 'include', signal: _openTicketAbort ? _openTicketAbort.signal : undefined }).then(function(r) { return r.json(); });
+      detailPromise.then(function(data) {
+        if (seq !== _openTicketSeq || currentTicketId !== id) return;
+        if (data && !data.error) {
+          _ticketDetailCache[id] = data;
+          _ticketDetailCacheTs[id] = Date.now();
+        }
+        if (data.error) {
+          var thread = document.getElementById('ticket-thread');
+          if (data.error === 'Access denied' || data.error === 'Forbidden') {
+            thread.innerHTML = '<div class="flex flex-col items-center justify-center h-full py-20 text-center"><svg class="w-12 h-12 text-red-400/60 mb-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg><h3 class="text-base font-semibold text-red-400 mb-1">' + _t('access_denied','Access Denied') + '</h3><p class="text-sm text-slate-500">' + _t('access_denied_desc','You do not have permission to view this ticket.') + '</p></div>';
+            document.getElementById('ticket-reply-area').style.display = 'none';
+          } else {
+            thread.innerHTML = '<div class="p-5 text-red-400 text-sm">' + esc(data.error) + '</div>';
+          }
+          return;
+        }
+        var isClosed = data.status === 'Closed';
+        var header = document.getElementById('ticket-header');
+        var closedByName = (data.closed_by === 'System (Auto-close)') ? _t('system_autoclose','System (Auto-close)') : esc(data.closed_by || '');
+        var closedInfo = (isClosed && data.closed_by) ? '<span class="text-[10px] text-slate-500">' + _t('closed_by','closed by') + ' ' + closedByName + '</span>' : '';
+        var title = data.title || (_t('ticket_hash','Ticket #') + data.id);
+        var productInfo = (data.productName) ? '<div class="flex items-center gap-2 mt-1.5"><img src="' + esc(safeUrl(data.productImage || '')) + '" class="w-5 h-5 rounded object-cover border border-white/10" onerror="this.style.display=&quot;none&quot;" /><span class="text-xs text-slate-400 font-medium">' + esc(data.productName) + '</span></div>' : '';
+        var backBtn = '<button type="button" onclick="exitMobileChat()" class="mob-back-btn hidden lg:hidden"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>' + _t('back','Back') + '</button>';
+        var userCloseBtn = (!isClosed) ? '<button type="button" id="btn-user-close-ticket" class="flex-shrink-0 inline-flex items-center gap-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-red-500/20 transition-all"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span>' + _t('close_ticket','Close Ticket') + '</span></button>' : '';
+        header.innerHTML = backBtn + '<div class="min-w-0 flex-1 flex items-center gap-2 flex-wrap"><span class="text-[11px] text-slate-500 font-mono">#' + data.id + '</span><h2 class="text-[13px] font-bold text-white truncate max-w-[200px]">' + esc(title) + '</h2>' + statusBadge(data.status) + categoryBadge(data.category) + (data.priority ? priorityBadge(true) : '') + closedInfo + '</div>' + userCloseBtn;
+
+        if (isClosed && data.delete_at) startCountdown(data.delete_at);
+        else { document.getElementById('ticket-countdown-bar').classList.add('hidden'); if (countdownInterval) clearInterval(countdownInterval); }
+
+        var thread = document.getElementById('ticket-thread');
+        var allMsgs = data.messages || [];
+        var msgs = allMsgs.length > 80 ? allMsgs.slice(-80) : allMsgs;
+        var olderHint = allMsgs.length > msgs.length
+          ? '<div class="text-center text-[11px] text-slate-500 mb-2">' + _t('showing_latest_msgs', 'Showing latest messages for faster loading') + '</div>'
+          : '';
+        var isHighAdmin = MY_ADMIN_ROLE !== null && MY_ADMIN_ROLE >= 2;
+        var prevDayKey = '';
+        thread.innerHTML = olderHint + msgs.map(function(m, idx) {
+          var separator = '';
+          var curDayKey = dateDayKey(m.created_at);
+          if (curDayKey && curDayKey !== prevDayKey) {
+            separator = dateSeparatorHtml(dateSeparatorLabel(m.created_at));
+            prevDayKey = curDayKey;
+          }
+          var isUser = m.role === 'user', isAI = m.role === 'assistant';
+          var avatarSrc, senderName;
+          if (isUser) { avatarSrc = (m.senderDiscordId && m.senderAvatar) ? getAvatarUrl(m.senderDiscordId, m.senderAvatar) : MY_AVATAR; senderName = m.senderName || MY_USERNAME; }
+          else if (isAI) { avatarSrc = STORE_LOGO; senderName = _t('ai_support','AI Support'); }
+          else { avatarSrc = (m.senderDiscordId && m.senderAvatar) ? getAvatarUrl(m.senderDiscordId, m.senderAvatar) : null; senderName = m.senderName || _t('admin_label','Admin'); }
+
+          var align = isUser ? 'flex-row' : 'flex-row-reverse';
+          var bubbleBg = isUser ? 'bg-green-500/10 border-green-500/20' : (isAI ? 'bg-white/5 border-white/10' : 'bg-amber-500/10 border-amber-500/20');
+          var labelColor = isUser ? 'text-green-400' : (isAI ? 'text-slate-400' : 'text-amber-400');
+
+          var avatarHtml = avatarSrc
+            ? '<img src="' + esc(safeUrl(avatarSrc)) + '" class="w-7 h-7 rounded-full ring-1 ring-white/10 shadow-sm flex-shrink-0" />'
+            : '<div class="w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center flex-shrink-0 shadow-sm"><svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg></div>';
+
+          var isOwner = m.senderDiscordId === MY_DISCORD_ID;
+          var canModify = isOwner || isHighAdmin;
+          var actionBtns = '<div class="msg-actions hidden flex items-center gap-0.5 bg-slate-950/90 backdrop-blur-sm border border-white/10 rounded-lg px-1 py-0.5 shadow-xl shadow-black/30 flex-shrink-0">';
+          actionBtns += '<button type="button" class="msg-copy p-1.5 rounded-md hover:bg-white/10 transition-colors" title="' + _t('copy','Copy') + '" data-content="' + esc(m.content).replace(/"/g, '&quot;') + '"><svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9.75a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg></button>';
+          if (!isClosed) {
+            actionBtns += '<button type="button" class="msg-reply-btn p-1.5 rounded-md hover:bg-green-500/20 transition-colors" title="' + _t('reply','Reply') + '" data-mid="' + m.id + '" data-sender="' + esc(senderName).replace(/"/g, '&quot;') + '" data-content="' + esc(m.content).replace(/"/g, '&quot;') + '"><svg class="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg></button>';
+          }
+          if (canModify && !isClosed) {
+            actionBtns += '<button type="button" class="msg-edit p-1.5 rounded-md hover:bg-white/10 transition-colors" title="' + _t('edit','Edit') + '" data-mid="' + m.id + '" data-content="' + esc(m.content).replace(/"/g, '&quot;') + '"><svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg></button>';
+            actionBtns += '<button type="button" class="msg-delete p-1.5 rounded-md hover:bg-red-500/20 transition-colors" title="' + _t('delete_label','Delete') + '" data-mid="' + m.id + '"><svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg></button>';
+          }
+          actionBtns += '</div>';
+
+          var replyPreview = '';
+          if (m.replyTo) {
+            var rpName = esc(m.replyTo.senderName || _t('unknown','Unknown'));
+            var rpText = esc(m.replyTo.content.length > 80 ? m.replyTo.content.slice(0, 80) + '...' : m.replyTo.content);
+            replyPreview = '<div class="reply-jump cursor-pointer mb-0.5 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors max-w-full" data-reply-id="' + m.replyTo.id + '">'
+              + '<svg class="w-3 h-3 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>'
+              + '<span class="text-[11px] font-medium text-green-400 flex-shrink-0">' + rpName + '</span>'
+              + '<span class="text-[11px] text-slate-500 truncate">' + rpText + '</span></div>';
+          }
+
+          var actionsOrder = isUser ? 'flex-row-reverse' : 'flex-row-reverse';
+          return separator + '<div id="msg-' + m.id + '" class="fade-in flex gap-2.5 ' + align + ' msg-wrap" data-mid="' + m.id + '">' + avatarHtml +
+            '<div class="max-w-[75%] min-w-0 ' + (isUser ? '' : 'flex flex-col items-end') + '"><div class="flex items-center gap-1.5 mb-0.5 ' + (isUser ? '' : 'justify-end') + '"><span class="text-xs font-semibold ' + labelColor + '">' + esc(senderName) + '</span><span class="text-[11px] text-slate-500">' + fmtMsgTime(m.created_at) + '</span></div>' +
+            replyPreview +
+            '<div class="flex items-center gap-1.5 ' + (isUser ? 'flex-row' : 'flex-row-reverse') + '"><div class="rounded-xl px-3 py-2 border w-fit ' + bubbleBg + '">' + renderMsgContent(m.id, m.content) + '</div>' + actionBtns + '</div></div></div>';
+        }).join('');
+
+        if (data.admin_seen_at && data.admin_seen_by) {
+          var lastUserIdx = -1;
+          for (var si = msgs.length - 1; si >= 0; si--) { if (msgs[si].role === 'user') { lastUserIdx = si; break; } }
+          if (lastUserIdx >= 0) {
+            var seenEl = document.getElementById('msg-' + msgs[lastUserIdx].id);
+            if (seenEl) {
+              var seenHtml = '<div class="flex items-center gap-1 mt-1 ' + (true ? '' : 'justify-end') + '"><svg class="w-3 h-3 text-green-400/70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span class="text-[10px] text-green-400/70 font-medium">' + _t('seen_by_support','Seen by support') + '</span></div>';
+              seenEl.insertAdjacentHTML('afterend', seenHtml);
+            }
+          }
+        }
+
+        bindMsgActions();
+        var ucBtn = document.getElementById('btn-user-close-ticket');
+        if (ucBtn) {
+          ucBtn.addEventListener('click', function() {
+            showConfirmDialog(_t('close_ticket_confirm','Are you sure you want to close this ticket?'), function(ok) {
+              if (!ok) return;
+              ucBtn.disabled = true;
+              fetch(API + '/ticket/user-close', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticketId: currentTicketId }) })
+                .then(function(r) { return r.json(); }).then(function(d) {
+                  if (d.error) { showToast(d.error); ucBtn.disabled = false; }
+                  else { loadTickets(true); openTicket(currentTicketId, true, true, true); }
+                });
+            });
+          });
+        }
+        if (!skipListRefresh) document.getElementById('reply-content').value = '';
+        document.getElementById('ticket-reply-area').style.display = isClosed ? 'none' : '';
+        var newSig = msgs.map(function(m) { return m.id + ':' + m.content.length; }).join('|');
+        var sigChanged = newSig !== lastMsgSignature;
+        lastMsgSignature = newSig;
+        _dashRenderedLastId = msgs.length ? (parseInt(msgs[msgs.length - 1].id, 10) || 0) : 0;
+        if (!skipListRefresh || sigChanged) autoScrollThreadBottom(thread);
+        startMsgPolling(id);
+        startTypingPoll(id);
+
+        var ratingArea = document.getElementById('ticket-rating-area');
+        if (isClosed) {
+          ratingArea.classList.remove('hidden');
+          fetch(API + '/ticket/rating/' + id, { credentials: 'include' }).then(function(r) { return r.json(); }).then(function(rd) {
+            if (rd.rating) {
+              var stars = '';
+              for (var si = 1; si <= 5; si++) stars += si <= rd.rating ? '<svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' : '<svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+              ratingArea.innerHTML = '<div class="flex items-center gap-3"><span class="text-sm text-slate-400">' + _t('your_rating','Your rating:') + '</span><div class="flex gap-0.5">' + stars + '</div><span class="text-sm font-semibold text-yellow-400">' + rd.rating + '/5</span></div>';
+            } else {
+              var starsHtml = '';
+              for (var si = 1; si <= 5; si++) starsHtml += '<button type="button" class="rate-star transition-transform hover:scale-110" data-star="' + si + '"><svg class="w-7 h-7 text-slate-600 hover:text-yellow-400 transition-colors" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>';
+              ratingArea.innerHTML = '<div class="flex flex-col items-center gap-2 py-2"><span class="text-sm font-medium text-slate-300">' + _t('rate_support','Rate the support service') + '</span><div class="flex gap-1" id="rating-stars">' + starsHtml + '</div></div>';
+              ratingArea.querySelectorAll('.rate-star').forEach(function(btn) {
+                btn.addEventListener('mouseenter', function() {
+                  var hoverVal = parseInt(btn.dataset.star);
+                  ratingArea.querySelectorAll('.rate-star').forEach(function(b) {
+                    var sv = parseInt(b.dataset.star);
+                    b.querySelector('svg').setAttribute('fill', sv <= hoverVal ? 'currentColor' : 'none');
+                    b.querySelector('svg').classList.toggle('text-yellow-400', sv <= hoverVal);
+                    b.querySelector('svg').classList.toggle('text-slate-600', sv > hoverVal);
+                  });
+                });
+                btn.addEventListener('click', function() {
+                  var val = parseInt(btn.dataset.star);
+                  ratingArea.querySelectorAll('.rate-star').forEach(function(b) { b.disabled = true; b.style.pointerEvents = 'none'; });
+                  fetch(API + '/ticket/rate', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticketId: currentTicketId, rating: val }) })
+                    .then(function(r) { return r.json(); }).then(function(d) { if (!d.error || d.error === 'Already rated') openTicket(currentTicketId, true); });
+                });
+              });
+              var starsContainer = document.getElementById('rating-stars');
+              if (starsContainer) {
+                starsContainer.addEventListener('mouseleave', function() {
+                  ratingArea.querySelectorAll('.rate-star svg').forEach(function(sv) { sv.setAttribute('fill', 'none'); sv.classList.remove('text-yellow-400'); sv.classList.add('text-slate-600'); });
+                });
+              }
+            }
+          });
+        } else {
+          ratingArea.classList.add('hidden');
+          ratingArea.innerHTML = '';
+        }
+      }).catch(function(err) {
+        if (err && err.name === 'AbortError') return;
+      });
+    }
+
+    function esc(s) {
+      if (s === null || s === undefined) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    var IMG_RE = /^\[img:([a-z0-9_]+)\]$/i;
+    function renderMarkdown(text) {
+      var s = esc(text);
+      var BT3 = String.fromCharCode(96,96,96);
+      var BT = String.fromCharCode(96);
+      var codeBlocks = [];
+      var segs = s.split(BT3);
+      s = '';
+      for (var i = 0; i < segs.length; i++) {
+        if (i % 2 === 1) {
+          var code = segs[i];
+          if (code.charAt(0) === '\n') code = code.slice(1);
+          var firstNl = code.indexOf('\n');
+          if (firstNl > 0 && /^[a-zA-Z]+$/.test(code.slice(0, firstNl))) code = code.slice(firstNl + 1);
+          if (code.length && code.charAt(code.length - 1) === '\n') code = code.slice(0, -1);
+          var ph = '%%CB' + codeBlocks.length + '%%';
+          codeBlocks.push('<pre class="bg-black/40 border border-white/10 rounded-lg p-3 my-2 overflow-x-auto"><code class="text-[13px] text-green-300 font-mono whitespace-pre">' + code + '</code></pre>');
+          s += ph;
+        } else { s += segs[i]; }
+      }
+      s = s.replace(new RegExp(BT + '([^' + BT + '\\n]+)' + BT, 'g'), '<code class="bg-black/30 text-green-300 px-1 py-0.5 rounded text-[13px] font-mono">$1</code>');
+      s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-green-400 underline hover:text-green-300">$1</a>');
+      s = s.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>');
+      var lines = s.split('\n');
+      var out = [];
+      for (var li = 0; li < lines.length; li++) {
+        var line = lines[li];
+        if (/^#### /.test(line)) out.push('<div class="text-[13px] font-semibold text-white mt-2 mb-1">' + line.slice(5) + '</div>');
+        else if (/^### /.test(line)) out.push('<div class="text-sm font-semibold text-white mt-3 mb-1">' + line.slice(4) + '</div>');
+        else if (/^## /.test(line)) out.push('<div class="text-[15px] font-semibold text-white mt-3 mb-1">' + line.slice(3) + '</div>');
+        else if (/^# /.test(line)) out.push('<div class="text-base font-bold text-white mt-3 mb-1">' + line.slice(2) + '</div>');
+        else if (/^---$/.test(line)) out.push('<hr class="border-white/10 my-3" />');
+        else if (/^&gt; /.test(line)) out.push('<div class="border-l-2 border-green-500/40 pl-3 ml-1 my-1 text-slate-300 italic">' + line.slice(5) + '</div>');
+        else if (/^[\*\-] /.test(line)) out.push('<div class="flex gap-2 ml-3"><span class="text-green-400 select-none">\u2022</span><span>' + line.replace(/^[\*\-] /, '') + '</span></div>');
+        else if (/^\d+\. /.test(line)) { var num = (line.match(/^(\d+)\./) || ['',''])[1]; out.push('<div class="flex gap-2 ml-3"><span class="text-green-400 font-medium select-none min-w-[1.2em]">' + num + '.</span><span>' + line.replace(/^\d+\. /, '') + '</span></div>'); }
+        else if (line.trim() === '') out.push('<div class="h-1.5"></div>');
+        else out.push('<div>' + line + '</div>');
+      }
+      s = out.join('');
+      for (var ci = 0; ci < codeBlocks.length; ci++) s = s.replace('%%CB' + ci + '%%', codeBlocks[ci]);
+      return s;
+    }
+    function renderMsgContent(id, content) {
+      var m = content.match(IMG_RE);
+      if (m) return '<img src="/api/image/' + m[1] + '" class="max-w-[250px] max-h-[210px] rounded-xl object-contain cursor-zoom-in" onerror="this.style.display=&quot;none&quot;" onclick="document.getElementById(&#39;img-lightbox-src&#39;).src=this.src;document.getElementById(&#39;img-lightbox&#39;).classList.remove(&#39;hidden&#39;)" />';
+      return '<div class="text-[13px] text-slate-200 msg-bubble leading-normal" dir="auto" id="msg-text-' + id + '">' + renderMarkdown(content) + '</div>';
+    }
+    function safeUrl(v) {
+      if (!v) return '';
+      try {
+        var u = new URL(String(v), window.location.origin);
+        if (u.protocol === 'http:' || u.protocol === 'https:') return u.toString();
+      } catch {}
+      return '';
+    }
+
+    var _lastDashPollSig = null;
+    var _dashRenderedLastId = 0;
+    var _dashPollInFlight = false;
+    var _dashPollToken = 0;
+    function startMsgPolling(ticketId) {
+      stopMsgPolling();
+      _lastDashPollSig = null;
+      _dashPollInFlight = false;
+      var pollToken = ++_dashPollToken;
+      var thread = document.getElementById('ticket-thread');
+      var existingMsgs = thread ? thread.querySelectorAll('.msg-wrap[data-mid]') : [];
+      _dashRenderedLastId = 0;
+      existingMsgs.forEach(function(el) {
+        var mid = parseInt(el.getAttribute('data-mid') || '0', 10) || 0;
+        if (mid > _dashRenderedLastId) _dashRenderedLastId = mid;
+      });
+      function poll() {
+        if (currentTicketId !== ticketId || pollToken !== _dashPollToken) { stopMsgPolling(); return; }
+        if (document.hidden || _dashPollInFlight) return;
+        _dashPollInFlight = true;
+        var pollUrl = API + '/ticket/' + ticketId + '/poll';
+        if (_dashRenderedLastId > 0) pollUrl += '?since=' + _dashRenderedLastId;
+        fetch(pollUrl, { credentials: 'include' })
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (pollToken !== _dashPollToken || currentTicketId !== ticketId) return;
+            var sig = String(d.last_id || 0);
+            _lastDashPollSig = sig;
+            var incoming = Array.isArray(d.newMessages) ? d.newMessages : (Array.isArray(d.new_messages) ? d.new_messages : []);
+            if (!incoming.length) return;
+            var th = document.getElementById('ticket-thread');
+            if (!th) return;
+            var prevLastId = _dashRenderedLastId;
+            var shouldNotify = false;
+            incoming.forEach(function(m) {
+              var mid = parseInt(String(m.id || 0), 10) || 0;
+              if (mid > _dashRenderedLastId) _dashRenderedLastId = mid;
+              var isOwnUser = m.role === 'user' && m.senderDiscordId && m.senderDiscordId === MY_DISCORD_ID;
+              if (!isOwnUser && mid > prevLastId) shouldNotify = true;
+              if (isOwnUser) {
+                var pendingOwn = th.querySelector('.msg-wrap[data-pending="1"]');
+                if (pendingOwn) {
+                  pendingOwn.id = 'msg-' + m.id;
+                  pendingOwn.setAttribute('data-mid', String(m.id));
+                  pendingOwn.removeAttribute('data-pending');
+                  var pt = pendingOwn.querySelector('.msg-time');
+                  if (pt && m.created_at) pt.textContent = fmtMsgTime(m.created_at);
+                }
+                return;
+              }
+              if (document.querySelector('.msg-wrap[data-mid="' + m.id + '"]')) return;
+              var isUser = m.role === 'user', isAI = m.role === 'assistant';
+              var avatarSrc, senderName;
+              if (isUser) { avatarSrc = (m.senderDiscordId && m.senderAvatar) ? getAvatarUrl(m.senderDiscordId, m.senderAvatar) : MY_AVATAR; senderName = m.senderName || MY_USERNAME; }
+              else if (isAI) { avatarSrc = STORE_LOGO; senderName = _t('ai_support','AI Support'); }
+              else { avatarSrc = (m.senderDiscordId && m.senderAvatar) ? getAvatarUrl(m.senderDiscordId, m.senderAvatar) : null; senderName = m.senderName || _t('admin_label','Admin'); }
+              var align = isUser ? 'flex-row' : 'flex-row-reverse';
+              var bubbleBg = isUser ? 'bg-green-500/10 border-green-500/20' : (isAI ? 'bg-white/5 border-white/10' : 'bg-amber-500/10 border-amber-500/20');
+              var labelColor = isUser ? 'text-green-400' : (isAI ? 'text-slate-400' : 'text-amber-400');
+              var avatarHtml = avatarSrc ? '<img src="' + esc(safeUrl(avatarSrc)) + '" class="w-7 h-7 rounded-full ring-1 ring-white/10 shadow-sm flex-shrink-0" />' : '<div class="w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center flex-shrink-0 shadow-sm"><svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg></div>';
+              var html = '<div class="msg-wrap flex ' + align + ' items-start gap-2.5 group animate-slide-up" data-mid="' + m.id + '">' + avatarHtml + '<div class="max-w-[82%] min-w-0 flex flex-col gap-0.5"><div class="flex items-baseline gap-2 ' + (isUser ? '' : 'flex-row-reverse') + '"><span class="text-[11px] font-semibold ' + labelColor + '">' + esc(senderName) + '</span><span class="text-[10px] text-slate-500 whitespace-nowrap">' + fmtMsgTime(m.created_at) + '</span></div><div class="rounded-2xl border px-3.5 py-2.5 ' + bubbleBg + ' relative">' + renderMsgContent(m.id, m.content) + '</div></div></div>';
+              th.insertAdjacentHTML('beforeend', html);
+            });
+            autoScrollThreadBottom(th);
+            if (shouldNotify) playNotifSound();
+          }).catch(function(){})
+          .finally(function() {
+            if (pollToken === _dashPollToken) _dashPollInFlight = false;
+          });
+      }
+      poll();
+      msgPollInterval = setInterval(poll, 1600);
+    }
+    function stopMsgPolling() { if (msgPollInterval) { clearInterval(msgPollInterval); msgPollInterval = null; } _lastDashPollSig = null; _dashRenderedLastId = 0; _dashPollInFlight = false; _dashPollToken++; }
+
+    var _dTypingPoll = null;
+    var _dLastTypingSentAt = 0;
+    function dashSendTyping(force) {
+      if (!currentTicketId) return;
+      var now = Date.now();
+      if (!force && now - _dLastTypingSentAt < 3000) return;
+      _dLastTypingSentAt = now;
+      fetch(API + '/typing', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticketId: currentTicketId }) }).catch(function(){});
+    }
+    function startTypingPoll(tid) {
+      stopTypingPoll();
+      function pollTyping() {
+        if (currentTicketId !== tid) { stopTypingPoll(); return; }
+        if (document.hidden) return;
+        fetch(API + '/typing?ticketId=' + tid, { credentials: 'include' })
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            var bar = document.getElementById('dash-typing-bar');
+            if (d.typing && d.typing.length) {
+              document.getElementById('dash-typing-text').textContent = d.typing.join(', ') + ' ' + _t('typing_indicator','typing...');
+              bar.classList.remove('hidden');
+            } else { bar.classList.add('hidden'); }
+          }).catch(function(){});
+      }
+      pollTyping();
+      _dTypingPoll = setInterval(pollTyping, 1800);
+    }
+    function stopTypingPoll() { if (_dTypingPoll) { clearInterval(_dTypingPoll); _dTypingPoll = null; } }
+    var _dashSearchTimer = null;
+    document.getElementById('dash-ticket-search').addEventListener('input', function() {
+      if (_dashSearchTimer) clearTimeout(_dashSearchTimer);
+      _dashSearchTimer = setTimeout(function() { renderFilteredTickets(allTicketsCache); }, 200);
+    });
+    document.getElementById('reply-content').addEventListener('input', function() {
+      dashSendTyping();
+    });
+
+    document.getElementById('btn-new-ticket').addEventListener('click', function() {
+      if (this.disabled) return; selectedCategory = null;
+      document.getElementById('new-ticket-form').classList.remove('hidden');
+      document.getElementById('ticket-detail').classList.add('hidden');
+      document.getElementById('ticket-empty').classList.add('hidden');
+      if (isMobile()) { document.getElementById('dash-list-col').classList.add('mob-hide'); document.getElementById('new-ticket-form').classList.add('mob-fullscreen'); }
+      document.getElementById('step-category').classList.remove('hidden');
+      document.getElementById('step-details').classList.add('hidden');
+      document.getElementById('btn-next-step').disabled = true;
+      document.querySelectorAll('.category-card').forEach(function(c) { c.classList.remove('border-green-500/50', 'bg-green-500/5'); c.classList.add('border-white/10'); c.querySelector('.cat-check').classList.add('hidden'); });
+    });
+
+    document.querySelectorAll('.category-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        selectedCategory = card.dataset.category;
+        document.querySelectorAll('.category-card').forEach(function(c) { c.classList.remove('border-green-500/50', 'bg-green-500/5'); c.classList.add('border-white/10'); c.querySelector('.cat-check').classList.add('hidden'); });
+        card.classList.remove('border-white/10'); card.classList.add('border-green-500/50', 'bg-green-500/5');
+        card.querySelector('.cat-check').classList.remove('hidden');
+        document.getElementById('btn-next-step').disabled = false;
+      });
+    });
+
+    document.getElementById('btn-next-step').addEventListener('click', function() {
+      if (!selectedCategory) return;
+      document.getElementById('step-category').classList.add('hidden');
+      document.getElementById('step-details').classList.remove('hidden');
+      var meta = CATEGORY_META[selectedCategory];
+      document.getElementById('selected-category-badge').className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium ' + (meta ? meta.color : '');
+      document.getElementById('selected-category-badge').innerHTML = meta ? (catIcon(selectedCategory) + '<span>' + catLabel(selectedCategory) + '</span>') : selectedCategory;
+      document.getElementById('new-ticket-title').value = '';
+      document.getElementById('new-ticket-order').value = '';
+      document.getElementById('order-verify-status').classList.add('hidden');
+      document.getElementById('form-error-msg').classList.add('hidden');
+      selectedProductId = null; document.getElementById('selected-product-id').value = '';
+      document.getElementById('product-combo-label').innerHTML = '<span class="text-slate-500">' + _t('select_product','Select a product...') + '</span>';
+
+      var showProduct = selectedCategory === 'support' || selectedCategory === 'inquiry';
+      var showOrder = selectedCategory === 'support';
+      document.getElementById('field-product').classList.toggle('hidden', !showProduct);
+      document.getElementById('field-order-number').classList.toggle('hidden', !showOrder);
+
+      if (showProduct) loadProductCombo();
+      document.getElementById('new-ticket-title').focus();
+    });
+
+    var ERROR_MAP = {
+      'Order number not found. Please enter a valid order number.': 'order_not_found',
+      'This order number is associated with another client and cannot be used.': 'order_used',
+      'Order number is required for Technical Support tickets': 'order_required',
+      'Product selection is required for Technical Support tickets': 'product_required',
+      'Product selection is required for Inquiry tickets': 'product_required_inq',
+      'Invalid order number format': 'order_invalid_format',
+      'Order verification service unavailable': 'order_verify_unavailable',
+      'Title is required': 'title_required',
+      'Too many requests. Please try again shortly.': 'rate_limited'
+    };
+    function translateError(msg) {
+      var key = ERROR_MAP[msg];
+      if (key) return _t(key, msg);
+      return msg;
+    }
+    function showFormError(msg) {
+      var el = document.getElementById('form-error-msg');
+      el.classList.remove('hidden'); el.textContent = msg;
+    }
+
+    document.getElementById('btn-back-step').addEventListener('click', function() { document.getElementById('step-details').classList.add('hidden'); document.getElementById('step-category').classList.remove('hidden'); });
+
+    function cancelNewTicket() { document.getElementById('new-ticket-form').classList.add('hidden'); document.getElementById('new-ticket-form').classList.remove('mob-fullscreen'); document.getElementById('ticket-empty').classList.remove('hidden'); document.getElementById('dash-list-col').classList.remove('mob-hide'); selectedCategory = null; }
+    document.getElementById('btn-cancel-ticket').addEventListener('click', cancelNewTicket);
+    document.getElementById('btn-cancel-ticket-2').addEventListener('click', cancelNewTicket);
+
+    document.getElementById('btn-submit-ticket').addEventListener('click', function() {
+      var cat = selectedCategory || 'support';
+      var title = document.getElementById('new-ticket-title').value.trim();
+      document.getElementById('form-error-msg').classList.add('hidden');
+
+      if (!title) { showFormError(_t('title_required','Title is required.')); document.getElementById('new-ticket-title').focus(); return; }
+      var msg = title;
+
+      if (cat === 'support') {
+        if (!selectedProductId) { showFormError(_t('product_required','Product selection is required for Technical Support.')); return; }
+        var orderVal = document.getElementById('new-ticket-order').value.trim();
+        if (!orderVal) { showFormError(_t('order_required','Order number is required for Technical Support.')); document.getElementById('new-ticket-order').focus(); return; }
+      }
+      if (cat === 'inquiry') {
+        if (!selectedProductId) { showFormError(_t('product_required_inq','Product selection is required for Inquiry tickets.')); return; }
+      }
+
+      var btn = this; btn.disabled = true; btn.textContent = _t('submitting','Submitting...');
+      var submitBody = { message: msg, title: title, category: cat };
+      if (selectedProductId) submitBody.productId = selectedProductId;
+      if (cat === 'support') submitBody.orderNumber = document.getElementById('new-ticket-order').value.trim();
+      fetch(API + '/ticket/create', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(submitBody) })
+        .then(function(r) { return r.json(); }).then(function(data) {
+          btn.disabled = false; btn.textContent = _t('submit_ticket','Submit Ticket');
+          if (data.error) { showFormError(translateError(data.error)); return; }
+          document.getElementById('new-ticket-form').classList.add('hidden');
+          document.getElementById('form-error-msg').classList.add('hidden');
+          loadTickets(); if (data.id) openTicket(data.id);
+        }).catch(function() { btn.disabled = false; btn.textContent = _t('submit_ticket','Submit Ticket'); });
+    });
+
+    function clearDashReplyTo() { dashReplyToId = null; document.getElementById('dash-reply-indicator').classList.add('hidden'); }
+    document.getElementById('dash-reply-cancel').addEventListener('click', clearDashReplyTo);
+
+    function bindMsgActions() {
+      document.querySelectorAll('.msg-wrap').forEach(function(el) {
+        el.addEventListener('mouseenter', function() { var a = el.querySelector('.msg-actions'); if (a) a.classList.remove('hidden'); });
+        el.addEventListener('mouseleave', function() { var a = el.querySelector('.msg-actions'); if (a) a.classList.add('hidden'); });
+      });
+      document.querySelectorAll('.msg-copy').forEach(function(btn) {
+        btn.addEventListener('click', function(e) { e.stopPropagation(); navigator.clipboard.writeText(btn.getAttribute('data-content') || '').then(function() { var svg = btn.querySelector('svg'); svg.style.color = '#4ade80'; setTimeout(function() { svg.style.color = ''; }, 1000); }); });
+      });
+      document.querySelectorAll('.msg-reply-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dashReplyToId = parseInt(btn.getAttribute('data-mid'));
+          document.getElementById('dash-reply-to-name').textContent = _t('replying_to','Replying to') + ' ' + (btn.getAttribute('data-sender') || _t('unknown','Unknown'));
+          var prev = btn.getAttribute('data-content') || '';
+          document.getElementById('dash-reply-to-preview').textContent = prev.length > 100 ? prev.slice(0, 100) + '...' : prev;
+          document.getElementById('dash-reply-indicator').classList.remove('hidden');
+          document.getElementById('reply-content').focus();
+        });
+      });
+      document.querySelectorAll('.reply-jump').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var target = document.getElementById('msg-' + el.getAttribute('data-reply-id'));
+          if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); target.classList.add('ring-2', 'ring-green-500/40', 'rounded-xl'); setTimeout(function() { target.classList.remove('ring-2', 'ring-green-500/40', 'rounded-xl'); }, 1500); }
+        });
+      });
+      document.querySelectorAll('.msg-edit').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          document.getElementById('edit-msg-id').value = btn.getAttribute('data-mid');
+          document.getElementById('edit-msg-content').value = btn.getAttribute('data-content') || '';
+          document.getElementById('edit-msg-modal').classList.remove('hidden');
+          document.getElementById('edit-msg-content').focus();
+        });
+      });
+      document.querySelectorAll('.msg-delete').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var mid = parseInt(btn.getAttribute('data-mid') || '0', 10);
+          if (!mid) return;
+          showConfirmDialog(_t('delete_msg_confirm','Delete this message?'), function(ok) {
+            if (!ok) return;
+            fetch(API + '/ticket/message/delete', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messageId: mid }) })
+              .then(function(r) { return r.json(); })
+              .then(function(d) {
+                if (d.error) { showToast(d.error); return; }
+                var el = document.getElementById('msg-' + mid);
+                if (el) el.remove();
+                var c = _ticketDetailCache[currentTicketId];
+                if (c && c.messages) c.messages = c.messages.filter(function(m) { return m.id !== mid; });
+              });
+          });
+        });
+      });
+    }
+
+    var _dashSending = false;
+    document.getElementById('btn-send-reply').addEventListener('click', function() {
+      var content = document.getElementById('reply-content').value.trim();
+      if (!content || !currentTicketId || _dashSending) return;
+      var sendingTicketId = currentTicketId;
+      _dashSending = true;
+      var btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="send-spinner"></span>';
+      var replyId = dashReplyToId;
+      clearDashReplyTo();
+      document.getElementById('reply-content').value = '';
+      var thread = document.getElementById('ticket-thread');
+      var nowFormatted = fmtMsgTime(new Date().toISOString());
+      var tempMsgId = 'tmp-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+      thread.insertAdjacentHTML('beforeend',
+        '<div id="msg-' + tempMsgId + '" class="fade-in flex gap-2.5 flex-row msg-wrap relative" data-pending="1">' +
+        '<img src="' + esc(safeUrl(MY_AVATAR)) + '" class="w-7 h-7 rounded-full ring-1 ring-white/10 shadow-sm flex-shrink-0" />' +
+        '<div class="max-w-[75%] min-w-0 relative">' +
+        '<div class="flex items-center gap-1.5 mb-0.5"><span class="text-xs font-semibold text-green-400">' + esc(MY_USERNAME) + '</span><span class="msg-time text-[11px] text-slate-500">' + nowFormatted + '</span></div>' +
+        '<div class="rounded-xl px-3 py-2 border w-fit bg-green-500/10 border-green-500/20"><p class="text-[13px] text-slate-200 msg-bubble leading-normal" dir="auto">' + esc(content) + '</p></div></div></div>'
+      );
+      thread.scrollTop = thread.scrollHeight;
+      fetch(API + '/ticket/reply', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticketId: sendingTicketId, content: content, replyToId: replyId }) })
+        .then(function(r) { return r.json(); }).then(function(data) {
+          var tmpEl = document.getElementById('msg-' + tempMsgId);
+          if (data.error) {
+            if (tmpEl) tmpEl.remove();
+            showToast(data.error);
+            return;
+          }
+          if (!tmpEl) return;
+          var msg = data.message || null;
+          if (msg && msg.id) {
+            tmpEl.id = 'msg-' + msg.id;
+            tmpEl.setAttribute('data-mid', String(msg.id));
+            tmpEl.removeAttribute('data-pending');
+            var tEl = tmpEl.querySelector('.msg-time');
+            if (tEl && msg.created_at) tEl.textContent = fmtMsgTime(msg.created_at);
+            if (msg.id > _dashRenderedLastId) _dashRenderedLastId = msg.id;
+          } else if (currentTicketId === sendingTicketId) {
+            openTicket(sendingTicketId, true, true, true);
+          }
+        })
+        .catch(function() {
+          var tmpEl = document.getElementById('msg-' + tempMsgId);
+          if (tmpEl) tmpEl.remove();
+          showToast(_t('failed_to_send','Failed to send message'));
+        })
+        .finally(function() { _dashSending = false; btn.disabled = false; btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>'; });
+    });
+    document.getElementById('reply-content').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('btn-send-reply').click(); } });
+
+    var _dashUploading = false;
+    async function dashUploadFile(file) {
+      if (!file || !currentTicketId || _dashUploading) return;
+      if (!file.type.match(/^(image\/(png|jpe?g|gif|webp)|application\/pdf|text\/plain)$/)) { showToast(_t('allowed_files','Allowed: images, PDF, TXT'), 'warning'); return; }
+      if (file.size > 5 * 1024 * 1024) { showToast(_t('file_too_large','File too large. Max 5MB.'), 'warning'); return; }
+      _dashUploading = true;
+      var btn = document.getElementById('btn-dash-upload');
+      btn.classList.add('opacity-50', 'pointer-events-none');
+      try {
+        var fd = new FormData(); fd.append('image', file);
+        var res = await fetch(API + '/upload/image', { method: 'POST', credentials: 'include', body: fd });
+        var d = await res.json();
+        if (d.error) { showToast(d.error); return; }
+        var imgContent = '[img:' + d.key + ']';
+        var replyId = dashReplyToId; clearDashReplyTo();
+        var r = await fetch(API + '/ticket/reply', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticketId: currentTicketId, content: imgContent, replyToId: replyId }) });
+        var rd = await r.json();
+        if (rd.error) { showToast(rd.error); return; }
+        openTicket(currentTicketId, true, true, true);
+      } catch(e) { showToast(_t('upload_failed','Upload failed') + ': ' + e.message); }
+      finally { _dashUploading = false; btn.classList.remove('opacity-50', 'pointer-events-none'); }
+    }
+
+    document.getElementById('btn-dash-upload').addEventListener('click', function() { document.getElementById('dash-img-input').click(); });
+    document.getElementById('dash-img-input').addEventListener('change', function() {
+      dashUploadFile(this.files[0]); this.value = '';
+    });
+
+    document.getElementById('reply-content').addEventListener('paste', function(e) {
+      var items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image/') === 0) { e.preventDefault(); dashUploadFile(items[i].getAsFile()); return; }
+      }
+    });
+
+    var replyArea = document.getElementById('ticket-reply-area');
+    replyArea.addEventListener('dragover', function(e) { e.preventDefault(); e.stopPropagation(); replyArea.classList.add('ring-2', 'ring-green-500/40'); });
+    replyArea.addEventListener('dragleave', function(e) { e.preventDefault(); e.stopPropagation(); replyArea.classList.remove('ring-2', 'ring-green-500/40'); });
+    replyArea.addEventListener('drop', function(e) {
+      e.preventDefault(); e.stopPropagation(); replyArea.classList.remove('ring-2', 'ring-green-500/40');
+      var files = e.dataTransfer.files;
+      if (files.length > 0) dashUploadFile(files[0]);
+    });
+
+    document.getElementById('edit-msg-cancel').addEventListener('click', function() { document.getElementById('edit-msg-modal').classList.add('hidden'); });
+    document.getElementById('edit-msg-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
+    document.getElementById('edit-msg-save').addEventListener('click', function() {
+      var mid = document.getElementById('edit-msg-id').value;
+      var newContent = document.getElementById('edit-msg-content').value.trim();
+      if (!newContent) return;
+      document.getElementById('edit-msg-modal').classList.add('hidden');
+      fetch(API + '/ticket/message/edit', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messageId: parseInt(mid), content: newContent }) })
+        .then(function(r) { return r.json(); }).then(function(d) {
+          if (d.error) { showToast(d.error); return; }
+          var msgId = parseInt(mid, 10);
+          var textEl = document.getElementById('msg-text-' + msgId);
+          if (textEl) textEl.innerHTML = renderMarkdown(newContent);
+          document.querySelectorAll('.msg-edit[data-mid="' + msgId + '"]').forEach(function(b) { b.setAttribute('data-content', newContent); });
+          document.querySelectorAll('.msg-copy').forEach(function(b) {
+            if (b.closest('#msg-' + msgId)) b.setAttribute('data-content', newContent);
+          });
+          var c = _ticketDetailCache[currentTicketId];
+          if (c && c.messages) {
+            for (var i = 0; i < c.messages.length; i++) {
+              if (c.messages[i].id === msgId) { c.messages[i].content = newContent; break; }
+            }
+          }
+        });
+    });
+    document.getElementById('edit-msg-content').addEventListener('keydown', function(e) { if (e.key === 'Escape') document.getElementById('edit-msg-modal').classList.add('hidden'); });
+
+    function loadProductCombo() {
+      fetch(API + '/products', { credentials: 'include' }).then(function(r) { return r.json(); }).then(function(data) {
+        allProducts = data.products || [];
+        renderProductOptions('');
+      });
+    }
+
+    function renderProductOptions(query) {
+      var opts = document.getElementById('product-options');
+      var q = query.toLowerCase();
+      var filtered = allProducts.filter(function(p) { return !q || p.name.toLowerCase().indexOf(q) !== -1; });
+      if (!filtered.length) { opts.innerHTML = '<div class="px-4 py-3 text-sm text-slate-500 text-center">' + _t('no_products_found','No products found') + '</div>'; return; }
+      opts.innerHTML = filtered.map(function(p) {
+        var isSelected = p.id === selectedProductId;
+        return '<div class="product-opt flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-white/5 transition-colors ' + (isSelected ? 'bg-green-500/10' : '') + '" data-id="' + p.id + '" data-name="' + esc(p.name).replace(/"/g, '&quot;') + '" data-img="' + esc(p.image_url).replace(/"/g, '&quot;') + '">' +
+          '<img src="' + esc(safeUrl(p.image_url)) + '" class="w-8 h-8 rounded-lg object-cover border border-white/10 flex-shrink-0" onerror="this.style.display=&quot;none&quot;" />' +
+          '<span class="text-sm text-slate-200 truncate">' + esc(p.name) + '</span>' +
+          (isSelected ? '<svg class="w-4 h-4 text-green-400 ml-auto flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>' : '') +
+        '</div>';
+      }).join('');
+      opts.querySelectorAll('.product-opt').forEach(function(opt) {
+        opt.addEventListener('click', function() {
+          selectedProductId = parseInt(opt.dataset.id);
+          document.getElementById('selected-product-id').value = selectedProductId;
+          document.getElementById('product-combo-label').innerHTML = '<div class="flex items-center gap-2"><img src="' + esc(safeUrl(opt.dataset.img)) + '" class="w-5 h-5 rounded object-cover border border-white/10" onerror="this.style.display=&quot;none&quot;" /><span class="text-slate-200">' + esc(opt.dataset.name) + '</span></div>';
+          document.getElementById('product-dropdown').classList.add('hidden');
+        });
+      });
+    }
+
+    document.getElementById('product-combo-trigger').addEventListener('click', function(e) {
+      e.stopPropagation();
+      var dd = document.getElementById('product-dropdown');
+      dd.classList.toggle('hidden');
+      if (!dd.classList.contains('hidden')) { document.getElementById('product-search').value = ''; renderProductOptions(''); document.getElementById('product-search').focus(); }
+    });
+    var _prodSearchTimer = null;
+    document.getElementById('product-search').addEventListener('input', function() {
+      var v = this.value;
+      if (_prodSearchTimer) clearTimeout(_prodSearchTimer);
+      _prodSearchTimer = setTimeout(function() { renderProductOptions(v); }, 120);
+    });
+    document.getElementById('product-search').addEventListener('click', function(e) { e.stopPropagation(); });
+    document.addEventListener('click', function() { document.getElementById('product-dropdown').classList.add('hidden'); });
+    document.getElementById('product-dropdown').addEventListener('click', function(e) { e.stopPropagation(); });
+
+    var _dashListPollTimer = null;
+    function scheduleDashListPoll() {
+      if (_dashListPollTimer) clearTimeout(_dashListPollTimer);
+      var delay = document.hidden ? 30000 : (currentTicketId ? 25000 : 12000);
+      _dashListPollTimer = setTimeout(function() {
+        if (!document.hidden && !currentTicketId) loadTickets();
+        scheduleDashListPoll();
+      }, delay);
+    }
+
+    loadTickets();
+    scheduleDashListPoll();
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden && !currentTicketId) loadTickets();
+      scheduleDashListPoll();
+    });
+    window.addEventListener('beforeunload', function() {
+      stopMsgPolling(); stopTypingPoll();
+      if (_dashListPollTimer) clearTimeout(_dashListPollTimer);
+    });
+    if (window._nwLangCallbacks) window._nwLangCallbacks.push(function() { loadTickets(); if (currentTicketId) openTicket(currentTicketId); });
+  </script>
+
+  <script>
+  window._nwNotifSound = null;
+  window._nwNotifLastAt = 0;
+  window._nwNotifCooldownMs = 900;
+  window.playNotifSound = function() {
+    try {
+      var now = Date.now();
+      if (now - (window._nwNotifLastAt || 0) < (window._nwNotifCooldownMs || 900)) return;
+      window._nwNotifLastAt = now;
+      if (!window._nwNotifSound) {
+        var ac = new (window.AudioContext || window.webkitAudioContext)();
+        window._nwNotifSound = ac;
+      }
+      var ctx = window._nwNotifSound;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.25);
+    } catch(e) {}
+  };
+
+  window.showToast = function(msg, type) {
+    type = type || 'error';
+    var container = document.getElementById('nw-toast-container');
+    if (!container) return;
+    var icons = {
+      success: '<svg width="20" height="20" style="width:20px;height:20px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+      error: '<svg width="20" height="20" style="width:20px;height:20px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>',
+      warning: '<svg width="20" height="20" style="width:20px;height:20px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"/></svg>',
+      info: '<svg width="20" height="20" style="width:20px;height:20px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>'
+    };
+    var el = document.createElement('div');
+    el.className = 'nw-toast nw-toast-' + type;
+    el.style.position = 'relative';
+    el.style.overflow = 'hidden';
+    el.innerHTML = (icons[type] || icons.error) + '<span>' + msg + '</span><span class="nw-toast-close">&times;</span><div class="nw-toast-progress"></div>';
+    container.appendChild(el);
+    var removeTimer = setTimeout(function() { el.classList.add('removing'); setTimeout(function(){ el.remove(); }, 350); }, 4000);
+    el.querySelector('.nw-toast-close').onclick = function(){ clearTimeout(removeTimer); el.classList.add('removing'); setTimeout(function(){ el.remove(); }, 350); };
+  };
+  </script>
+
+  <script>
+  (function(){
+    var cursor = document.getElementById('fx-cursor');
+    var glow = document.getElementById('fx-glow');
+    var canvas = document.getElementById('fx-canvas');
+    if (!cursor || !glow || !canvas) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    var particles = [];
+    var mouseX = -9999, mouseY = -9999;
+    var isMobile = !window.matchMedia('(pointer: fine)').matches;
+    var prefersReducedMotion = false;
+    try { prefersReducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch(e) {}
+    var lowPowerDevice = false;
+    try {
+      var mem = Number(navigator.deviceMemory || 0);
+      var cores = Number(navigator.hardwareConcurrency || 0);
+      lowPowerDevice = (mem > 0 && mem <= 4) || (cores > 0 && cores <= 4);
+    } catch(e) {}
+    var pathname = (window.location && window.location.pathname) ? window.location.pathname : '';
+    var busyAppView = pathname === '/dashboard' || pathname.indexOf('/admin') === 0 || pathname.indexOf('/support') === 0;
+    var disableFx = isMobile || prefersReducedMotion || lowPowerDevice || busyAppView;
+    if (disableFx) {
+      canvas.style.display = 'none';
+      cursor.style.display = 'none';
+      glow.style.display = 'none';
+      return;
+    }
+
+    /* ---- Custom Cursor + Mouse Glow (RAF-throttled) ---- */
+    var _rafMouse = null;
+    window.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX; mouseY = e.clientY;
+      if (!_rafMouse) {
+        _rafMouse = requestAnimationFrame(function() {
+          cursor.style.left = mouseX + 'px';
+          cursor.style.top = mouseY + 'px';
+          glow.style.left = (mouseX - window.innerWidth * 0.25) + 'px';
+          glow.style.top = (mouseY - window.innerWidth * 0.25) + 'px';
+          _rafMouse = null;
+        });
+      }
+    });
+
+    cursor.style.transform = 'translate(-50%,-50%)';
+
+    /* Cursor hover effect on interactive elements */
+    document.addEventListener('mouseover', function(e) {
+      var t = e.target;
+      if (t.closest && (t.closest('a') || t.closest('button') || t.closest('input') || t.closest('textarea') || t.closest('select'))) {
+        cursor.style.transform = 'translate(-50%,-50%) scale(2.5)';
+        cursor.style.background = 'rgba(34,197,94,0.5)';
+      }
+    });
+    document.addEventListener('mouseout', function(e) {
+      var t = e.target;
+      if (t.closest && (t.closest('a') || t.closest('button') || t.closest('input') || t.closest('textarea') || t.closest('select'))) {
+        cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+        cursor.style.background = '#22c55e';
+      }
+    });
+
+    /* ---- Particles ---- */
+    function Particle() {
+      this.init();
+    }
+    Particle.prototype.init = function() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 1.8 + 0.5;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = (Math.random() - 0.5) * 0.4;
+      this.life = Math.random() * 100;
+    };
+    Particle.prototype.update = function() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.life++;
+      if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    };
+    Particle.prototype.draw = function() {
+      var opacity = (Math.sin(this.life * 0.04) + 1) / 2 * 0.5 + 0.15;
+      ctx.fillStyle = 'rgba(34,197,94,' + opacity + ')';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    function initParticles() {
+      if (disableFx) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      particles = [];
+      for (var i = 0; i < 18; i++) particles.push(new Particle());
+    }
+
+    var _frameSkip = 0;
+    function animate() {
+      if (disableFx || document.hidden) { if (!document.hidden) requestAnimationFrame(animate); return; }
+      _frameSkip++;
+      if (_frameSkip % 3 !== 0) { requestAnimationFrame(animate); return; }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var connDistSq = 8100;
+      var mouseDistSq = 25600;
+      for (var i = 0; i < particles.length; i++) {
+        for (var j = i + 1; j < particles.length; j++) {
+          var dx = particles[i].x - particles[j].x;
+          var dy = particles[i].y - particles[j].y;
+          var dSq = dx * dx + dy * dy;
+          if (dSq < connDistSq) {
+            var d = Math.sqrt(dSq);
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(34,197,94,' + ((1 - d / 90) * 0.12) + ')';
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      for (var k = 0; k < particles.length; k++) {
+        particles[k].update();
+        particles[k].draw();
+        if (mouseX > 0) {
+          var mdx = particles[k].x - mouseX;
+          var mdy = particles[k].y - mouseY;
+          var mSq = mdx * mdx + mdy * mdy;
+          if (mSq < mouseDistSq) {
+            var mDist = Math.sqrt(mSq);
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(74,222,128,' + ((1 - mDist / 160) * 0.2) + ')';
+            ctx.lineWidth = 0.6;
+            ctx.moveTo(particles[k].x, particles[k].y);
+            ctx.lineTo(mouseX, mouseY);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    document.addEventListener('visibilitychange', function() { if (!document.hidden && !disableFx) requestAnimationFrame(animate); });
+
+    if (!disableFx) {
+      initParticles();
+      requestAnimationFrame(animate);
+      window.addEventListener('resize', initParticles);
+      var orbColors = ['rgba(34,197,94,0.10)','rgba(22,163,74,0.06)','rgba(255,255,255,0.02)'];
+      for (var oi = 0; oi < 2; oi++) {
+        var orb = document.createElement('div');
+        orb.className = 'fx-orb';
+        var sz = (Math.random() * 300 + 200) + 'px';
+        orb.style.width = sz; orb.style.height = sz;
+        orb.style.left = (Math.random() * 100) + 'vw';
+        orb.style.top = (Math.random() * 100) + 'vh';
+        orb.style.background = 'radial-gradient(circle, ' + orbColors[oi % orbColors.length] + ' 0%, transparent 70%)';
+        orb.style.animationDuration = (Math.random() * 12 + 12) + 's';
+        orb.style.animationDelay = (Math.random() * 4) + 's';
+        document.body.appendChild(orb);
+      }
+    }
+  })();
+  </script>
+
+  <script>
+  (function(){
+    /* ===== Expandable Settings Control ===== */
+    var togglesEl = document.getElementById('nw-toggles');
+    var triggerBtn = document.getElementById('nw-toggle-trigger');
+    var isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
+    var collapseTimer = null;
+
+    function expand() {
+      if (collapseTimer) { clearTimeout(collapseTimer); collapseTimer = null; }
+      togglesEl.classList.add('expanded');
+    }
+    function collapse() {
+      togglesEl.classList.remove('expanded');
+    }
+    function scheduleCollapse() {
+      if (collapseTimer) clearTimeout(collapseTimer);
+      collapseTimer = setTimeout(collapse, 400);
+    }
+
+    if (!isTouchDevice) {
+      togglesEl.addEventListener('mouseenter', expand);
+      togglesEl.addEventListener('mouseleave', scheduleCollapse);
+    }
+
+    triggerBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (togglesEl.classList.contains('expanded')) { collapse(); }
+      else { expand(); }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!togglesEl.contains(e.target)) collapse();
+    });
+
+    /* ===== Theme Toggle ===== */
+    var themeBtn = document.getElementById('nw-theme-btn');
+    var sunIcon = document.getElementById('nw-icon-sun');
+    var moonIcon = document.getElementById('nw-icon-moon');
+
+    function syncThemeIcons() {
+      var isLight = document.documentElement.classList.contains('light');
+      if (isLight) { sunIcon.classList.add('hidden'); moonIcon.classList.remove('hidden'); }
+      else { sunIcon.classList.remove('hidden'); moonIcon.classList.add('hidden'); }
+    }
+    syncThemeIcons();
+
+    themeBtn.addEventListener('click', function() {
+      document.documentElement.classList.toggle('light');
+      var isLight = document.documentElement.classList.contains('light');
+      try { localStorage.setItem('nw-theme', isLight ? 'light' : 'dark'); } catch(e){}
+      syncThemeIcons();
+    });
+
+    /* ===== Language Toggle ===== */
+    var T = {
+      sign_in:['Sign in','تسجيل الدخول'],
+      ai_platform:['AI-Powered Support Platform','منصة دعم مدعومة بالذكاء الاصطناعي'],
+      fast_smart:['Fast & Smart','سريع وذكي'],
+      customer_support:['Customer Support','دعم العملاء'],
+      hero_desc:['Get instant AI-powered replies in Arabic and English. Create tickets, track progress, and resolve issues faster than ever.','احصل على ردود فورية مدعومة بالذكاء الاصطناعي بالعربية والإنجليزية. أنشئ تذاكر، تابع التقدم، وحل المشاكل أسرع من أي وقت.'],
+      continue_discord:['Continue with Discord','تابع عبر Discord'],
+      learn_more:['Learn more','اعرف المزيد'],
+      uptime:['Uptime','وقت التشغيل'],
+      ai_response:['AI Response','استجابة AI'],
+      available:['Available','متاح'],
+      everything_need:['Everything you need','كل ما تحتاجه'],
+      features_desc:['A complete support platform designed for speed, intelligence, and seamless communication.','منصة دعم متكاملة مصممة للسرعة والذكاء والتواصل السلس.'],
+      ai_support:['AI Support','دعم ذكي'],
+      ai_support_desc:['Instant AI-powered responses that understand context and resolve issues intelligently.','ردود فورية مدعومة بالذكاء الاصطناعي تفهم السياق وتحل المشاكل بذكاء.'],
+      fast_replies:['Fast Replies','ردود سريعة'],
+      fast_replies_desc:['Get answers in seconds, not hours. Our AI learns from every interaction to improve.','احصل على إجابات في ثوانٍ وليس ساعات. ذكاؤنا الاصطناعي يتعلم من كل تفاعل.'],
+      multilingual:['Multilingual','متعدد اللغات'],
+      multilingual_desc:['Full Arabic and English support with automatic language detection and localized replies.','دعم كامل للعربية والإنجليزية مع كشف تلقائي للغة وردود محلية.'],
+      secure:['Secure','آمن'],
+      secure_desc:['Discord OAuth authentication with role-based admin access and full audit logging.','مصادقة Discord OAuth مع صلاحيات إدارية حسب الدور وسجل مراجعة كامل.'],
+      ready_start:['Ready to get started?','مستعد للبدء؟'],
+      cta_desc:['Create your first ticket in seconds. No signup forms, just Discord.','أنشئ أول تذكرة لك في ثوانٍ. بدون نماذج تسجيل، فقط Discord.'],
+      get_started:['Get Started with Discord','ابدأ مع Discord'],
+      privacy:['Privacy','الخصوصية'],
+      terms:['Terms','الشروط'],
+      contact:['Contact','اتصل بنا'],
+      my_tickets:['My Tickets','تذاكري'],
+      new_ticket:['New Ticket','تذكرة جديدة'],
+      open:['Open','مفتوحة'],
+      closed:['Closed','مغلقة'],
+      select_ticket:['Select a ticket or create a new one','اختر تذكرة أو أنشئ واحدة جديدة'],
+      sign_out:['Sign out','تسجيل الخروج'],
+      loading:['Loading...','جاري التحميل...'],
+      overview:['Overview','نظرة عامة'],
+      tickets:['Tickets','التذاكر'],
+      users:['Users','المستخدمون'],
+      points:['Points','النقاط'],
+      exchange:['Exchange','التبادل'],
+      orders:['Orders','الطلبات'],
+      audit_log:['Audit Log','سجل المراجعة'],
+      products:['Products','المنتجات'],
+      user_dashboard:['User Dashboard','لوحة المستخدم'],
+      admin:['Admin','المشرف'],
+      stats:['Stats','إحصائيات'],
+      send:['Send','إرسال'],
+      close_ticket:['Close Ticket','إغلاق التذكرة'],
+      reopen:['Reopen','إعادة فتح'],
+      subject:['Subject','الموضوع'],
+      category:['Category','الفئة'],
+      message:['Message','الرسالة'],
+      create:['Create','إنشاء'],
+      cancel:['Cancel','إلغاء'],
+      search:['Search','بحث'],
+      no_tickets:['No tickets yet','لا توجد تذاكر بعد'],
+      type_message:['Type a message...','اكتب رسالة...'],
+      senior_admin:['Senior Admin','مشرف أول'],
+      ticket_support:['Ticket Support','دعم التذاكر'],
+      create_new_ticket:['Create New Ticket','إنشاء تذكرة جديدة'],
+      choose_category:['Choose a category that best describes your request.','اختر الفئة التي تصف طلبك بشكل أفضل.'],
+      tech_support:['Technical Support','الدعم الفني'],
+      tech_support_desc:['For technical issues and feedback','للمشاكل التقنية والملاحظات'],
+      inquiry:['Inquiry','استفسار'],
+      inquiry_desc:['For general questions and inquiries','للأسئلة العامة والاستفسارات'],
+      business:['Business','أعمال'],
+      business_desc:['For reselling, media, and deals','لإعادة البيع والإعلام والصفقات'],
+      next:['Next','التالي'],
+      back:['Back','رجوع'],
+      ticket_details:['Ticket Details','تفاصيل التذكرة'],
+      ticket_details_desc:['Give your ticket a clear title and describe your issue in Arabic or English.','أعطِ تذكرتك عنواناً واضحاً وصف مشكلتك بالعربية أو الإنجليزية.'],
+      product:['Product','المنتج'],
+      select_product:['Select a product...','اختر منتج...'],
+      search_products:['Search products...','البحث عن منتجات...'],
+      title:['Title','العنوان'],
+      title_placeholder:['Brief summary of your issue...','ملخص قصير لمشكلتك...'],
+      description:['Description','الوصف'],
+      desc_placeholder:['Describe your issue in detail...','صف مشكلتك بالتفصيل...'],
+      submit_ticket:['Submit Ticket','إرسال التذكرة'],
+      edit_message:['Edit Message','تعديل الرسالة'],
+      save:['Save','حفظ'],
+      type_message:['Type your message...','اكتب رسالتك...'],
+      no_tickets_found:['No tickets found','لا توجد تذاكر'],
+      failed_to_load:['Failed to load','فشل التحميل'],
+      urgent:['Urgent','عاجل'],
+      deleted:['Deleted','محذوف'],
+      has_open_ticket:['You already have an open ticket. Please wait for it to be resolved or closed before creating a new one.','لديك تذكرة مفتوحة بالفعل. يرجى الانتظار حتى يتم حلها أو إغلاقها قبل إنشاء واحدة جديدة.'],
+      submitting:['Submitting...','جاري الإرسال...'],
+      closed_by:['closed by','أُغلقت بواسطة'],
+      system_autoclose:['System (Auto-close)','النظام (إغلاق تلقائي)'],
+      ticket_deleted:['This ticket has been deleted.','تم حذف هذه التذكرة.'],
+      ticket_delete_in:['This ticket will be deleted in','سيتم حذف هذه التذكرة خلال'],
+      order_number:['Order Number','رقم الطلب'],
+      order_placeholder:['Enter your order number...','أدخل رقم الطلب...'],
+      order_required:['Order number is required for Technical Support.','رقم الطلب مطلوب للدعم الفني.'],
+      order_not_found:['Order number not found. Please enter a valid order number.','رقم الطلب غير موجود. يرجى إدخال رقم طلب صحيح.'],
+      order_used:['This order number is associated with another client and cannot be used.','رقم الطلب هذا مرتبط بعميل آخر ولا يمكن استخدامه.'],
+      order_invalid_format:['Invalid order number format','صيغة رقم الطلب غير صحيحة'],
+      order_verify_unavailable:['Order verification service unavailable','خدمة التحقق من الطلب غير متاحة'],
+      product_required:['Product selection is required for Technical Support.','اختيار المنتج مطلوب للدعم الفني.'],
+      product_required_inq:['Product selection is required for Inquiry tickets.','اختيار المنتج مطلوب لتذاكر الاستفسار.'],
+      title_required:['Title is required.','العنوان مطلوب.'],
+      desc_required:['Description is required.','الوصف مطلوب.'],
+      rate_limited:['Too many requests. Please try again shortly.','طلبات كثيرة جداً. يرجى المحاولة لاحقاً.'],
+      your_rating:['Your rating:','تقييمك:'],
+      rate_support:['Rate the support service','قيّم خدمة الدعم'],
+      ai_support:['AI Support','دعم ذكي'],
+      admin_label:['Admin','المشرف'],
+      user_label:['User','المستخدم'],
+      unknown:['Unknown','غير معروف'],
+      ticket_hash:['Ticket #','تذكرة #'],
+      replying_to:['Replying to','رد على'],
+      copy:['Copy','نسخ'],
+      reply:['Reply','رد'],
+      edit:['Edit','تعديل'],
+      delete_label:['Delete','حذف'],
+      delete_msg_confirm:['Delete this message?','هل تريد حذف هذه الرسالة؟'],
+      upload_image:['Upload image','رفع صورة'],
+      only_images:['Only images (PNG, JPG, GIF, WebP) are allowed.','يُسمح فقط بالصور (PNG, JPG, GIF, WebP).'],
+      image_too_large:['Image too large. Max 5MB.','الصورة كبيرة جداً. الحد الأقصى 5 ميجابايت.'],
+      upload_failed:['Upload failed','فشل الرفع'],
+      no_products_found:['No products found','لم يتم العثور على منتجات'],
+      status_open:['Open','مفتوحة'],
+      status_open_label:['Opened','مفتوحة'],
+      status_answered:['Answered','تم الرد'],
+      status_closed:['Closed','مغلقة'],
+      h_unit:['h','س'],
+      m_unit:['m','د'],
+      s_unit:['s','ث'],
+      just_now:['Just now','الآن'],
+      today:['Today','اليوم'],
+      yesterday:['Yesterday','أمس'],
+      ago:['ago','مضت'],
+      monitor_manage:['Monitor and manage all support tickets.','مراقبة وإدارة جميع تذاكر الدعم.'],
+      total:['Total','الإجمالي'],
+      urgent_label:['Urgent','عاجل'],
+      responded:['Responded','تم الرد'],
+      latest_tickets:['Latest Tickets','أحدث التذاكر'],
+      view_all:['View all','عرض الكل'],
+      pts_leaderboard:['Points Leaderboard','لوحة متصدري النقاط'],
+      tickets_label:['tickets','تذاكر'],
+      ticket_label:['ticket','تذكرة'],
+      search_tickets:['Search by ID, user, product, title, or keywords...','البحث بالمعرف، المستخدم، المنتج، العنوان، أو الكلمات...'],
+      all_types:['All Types','كل الأنواع'],
+      escalated:['Escalated','تم التصعيد'],
+      all_label:['All','الكل'],
+      select_ticket_manage:['Select a ticket to manage','اختر تذكرة لإدارتها'],
+      escalate:['Escalate','تصعيد'],
+      close:['Close','إغلاق'],
+      remind:['Remind','تذكير'],
+      sending:['Sending...','جاري الإرسال...'],
+      sent:['Sent!','تم الإرسال!'],
+      reply_as_admin:['Reply as admin...','رد كمشرف...'],
+      my_points:['My Points','نقاطي'],
+      earn_points_desc:['Earn points for supporting tickets. 1,000 points = $10','اكسب نقاط من دعم التذاكر. 1,000 نقطة = 10 دولار'],
+      this_week:['This Week','هذا الأسبوع'],
+      this_month:['This Month','هذا الشهر'],
+      how_earn:['How You Earn Points','كيف تكسب النقاط'],
+      reply_ticket_pts:['Reply to a ticket','الرد على تذكرة'],
+      first_response_pts:['First response (claim)','أول رد (استلام)'],
+      close_ticket_pts:['Close a ticket','إغلاق تذكرة'],
+      inactivity_penalty:['penalty if no interaction for 24h on an assigned ticket','خصم 300 نقطة لو ما تفاعل الأدمن بالكامل خلال 24 ساعة على تذكرة مستلمة'],
+      my_redemption:['My Redemption Requests','طلبات الاستبدال'],
+      leaderboard:['Leaderboard','لوحة المتصدرين'],
+      weekly:['Weekly','أسبوعي'],
+      monthly:['Monthly','شهري'],
+      total_tab:['Total','الإجمالي'],
+      active_boost:['Active Boost','تعزيز نشط'],
+      pts_boost_active:['Points Boost Active!','تعزيز النقاط نشط!'],
+      pts_management:['Points Management','إدارة النقاط'],
+      pts_boost:['Points Boost','تعزيز النقاط'],
+      boost_pct:['Boost %','نسبة التعزيز %'],
+      duration_hours:['Duration (hours)','المدة (ساعات)'],
+      activate_boost:['Activate Boost','تفعيل التعزيز'],
+      recent_adjustments:['Recent Adjustments','التعديلات الأخيرة'],
+      manage_requests:['Manage Redemption Requests','إدارة طلبات الاستبدال'],
+      manage_products:['Manage store products that clients can select when creating tickets.','إدارة منتجات المتجر التي يمكن للعملاء اختيارها عند إنشاء التذاكر.'],
+      add_product:['Add Product','إضافة منتج'],
+      edit_product:['Edit Product','تعديل المنتج'],
+      product_name:['Product Name','اسم المنتج'],
+      image_url:['Image URL','رابط الصورة'],
+      available:['Available','متاح'],
+      unavailable:['Unavailable','غير متاح'],
+      remove:['Remove','إزالة'],
+      remove_product_confirm:['Remove product:','إزالة المنتج:'],
+      users_tab:['Users','المستخدمون'],
+      manage_users_desc:['View and manage all registered users.','عرض وإدارة جميع المستخدمين المسجلين.'],
+      search_users:['Search by username, email, or ID...','البحث بالاسم أو البريد أو المعرف...'],
+      all_roles:['All roles','كل الأدوار'],
+      users_only:['Users only','المستخدمون فقط'],
+      admins_only:['Admins only','المشرفون فقط'],
+      blacklisted:['Blacklisted','محظور'],
+      unblacklist:['Unblacklist','رفع الحظر'],
+      blacklist:['Blacklist','حظر'],
+      demote:['Demote','تخفيض'],
+      promote:['Promote','ترقية'],
+      joined:['Joined','انضم'],
+      rating:['Rating:','التقييم:'],
+      na:['N/A','غ/م'],
+      blacklist_confirm:['Blacklist this user? They will not be able to log in or create tickets.','حظر هذا المستخدم؟ لن يتمكن من تسجيل الدخول أو إنشاء تذاكر.'],
+      unblacklist_confirm:['Remove this user from the blacklist?','رفع الحظر عن هذا المستخدم؟'],
+      demote_confirm:['Remove admin privileges from this user?','إزالة صلاحيات المشرف من هذا المستخدم؟'],
+      enter_valid_amount:['Enter a valid amount','أدخل مبلغاً صحيحاً'],
+      enter_reason:['Enter a reason','أدخل السبب'],
+      remove_pts_confirm:['Remove points?','إزالة نقاط؟'],
+      manage_points:['Manage Points','إدارة النقاط'],
+      add_pts:['+ Add','+ إضافة'],
+      remove_pts:['- Remove','- إزالة'],
+      amount:['Amount','المبلغ'],
+      reason:['Reason','السبب'],
+      apply:['Apply','تطبيق'],
+      exchange_tab:['Exchange','التبادل'],
+      redeem_desc:['Redeem points for requests. 1,000 points = $10','استبدال النقاط بطلبات. 1,000 نقطة = 10 دولار'],
+      search_exchange:['Search by ID, description, or requester...','البحث بالمعرف أو الوصف أو مقدم الطلب...'],
+      submit_new_request:['Submit New Request','تقديم طلب جديد'],
+      pts_to_spend:['Points to spend','النقاط المراد استخدامها'],
+      what_would_you_like:['What would you like? (product/description)','ماذا تريد؟ (منتج/وصف)'],
+      submit:['Submit','إرسال'],
+      select_request:['Select a request to view details','اختر طلباً لعرض التفاصيل'],
+      add_message:['Add a message...','أضف رسالة...'],
+      pending:['Pending','قيد الانتظار'],
+      history:['History','السجل'],
+      approve:['Approve','موافقة'],
+      reject:['Reject','رفض'],
+      approval_note:['Approval note (optional):','ملاحظة الموافقة (اختياري):'],
+      rejection_reason:['Rejection reason (optional):','سبب الرفض (اختياري):'],
+      completed:['Completed','مكتمل'],
+      rejected:['Rejected','مرفوض'],
+      min_100_pts:['Minimum 100 points','الحد الأدنى 100 نقطة'],
+      enter_description:['Enter a description','أدخل وصفاً'],
+      breaks:['Breaks','الإجازات'],
+      breaks_tab:['Breaks','الإجازات'],
+      breaks_desc:['Request time off and manage admin breaks.','طلب إجازة وإدارة إجازات المشرفين.'],
+      search_breaks:['Search by name, reason, or ID...','البحث بالاسم أو السبب أو المعرف...'],
+      request_break:['Request Break','طلب إجازة'],
+      start_date:['Start Date','تاريخ البداية'],
+      end_date:['End Date','تاريخ النهاية'],
+      break_reason_ph:['Reason for break (e.g. Travel, Exams, Health...)','سبب الإجازة (مثال: سفر، اختبارات، صحة...)'],
+      select_break_request:['Select a request to view details','اختر طلباً لعرض التفاصيل'],
+      days:['days','أيام'],
+      approve:['Approve','موافقة'],
+      reject_break:['Reject Break Request','رفض طلب الإجازة'],
+      reject_break_desc:['You must provide a reason (visible to the requester).','يجب تقديم سبب (مرئي لمقدم الطلب).'],
+      break_approved:['Your break request has been approved.','تمت الموافقة على طلب إجازتك.'],
+      break_rejected:['Your break request was rejected.','تم رفض طلب إجازتك.'],
+      reviewed_by:['Reviewed by','تمت المراجعة بواسطة'],
+      days_btn:['Days','أيام'],
+      weeks_btn:['Weeks','أسابيع'],
+      weeks:['weeks','أسابيع'],
+      duration_required:['Enter a valid duration (minimum 1)','أدخل مدة صالحة (الحد الأدنى 1)'],
+      on_break:['On Break','في إجازة'],
+      close_ticket:['Close Ticket','إغلاق التذكرة'],
+      close_ticket_confirm:['Are you sure you want to close this ticket?','هل أنت متأكد أنك تريد إغلاق هذه التذكرة؟'],
+      ticket_closed_by_user:['Ticket closed by user.','تم إغلاق التذكرة بواسطة المستخدم.'],
+      access_denied:['Access Denied','الوصول مرفوض'],
+      access_denied_desc:['You do not have permission to view this ticket.','ليس لديك صلاحية لعرض هذه التذكرة.'],
+      private_ticket:['Private','خاصة'],
+      reason_required:['Reason is required','السبب مطلوب'],
+      add_message:['Add a message...','أضف رسالة...'],
+      approved:['Approved','مُعتمد'],
+      rmz_orders:['RMZ Orders','طلبات RMZ'],
+      search_order_id:['Search by Order ID...','البحث برقم الطلب...'],
+      loading_orders:['Loading orders...','جاري تحميل الطلبات...'],
+      failed_load_orders:['Failed to load orders','فشل تحميل الطلبات'],
+      no_orders_search:['No orders matching search.','لا توجد طلبات مطابقة للبحث.'],
+      no_orders:['No orders found.','لم يتم العثور على طلبات.'],
+      order_id:['Order ID','رقم الطلب'],
+      customer:['Customer','العميل'],
+      email:['Email','البريد الإلكتروني'],
+      date:['Date','التاريخ'],
+      order_details:['Order Details','تفاصيل الطلب'],
+      prev:['Prev','السابق'],
+      next_page:['Next','التالي'],
+      page:['Page','صفحة'],
+      audit_tab:['Audit Log','سجل المراجعة'],
+      audit_desc:['Track your points and message activity.','تتبع نشاط النقاط والرسائل.'],
+      points_tab:['Points','النقاط'],
+      messages_tab:['Messages','الرسائل'],
+      general_tab:['General','عام'],
+      sent_tab:['Sent','مرسلة'],
+      edited_tab:['Edited','معدلة'],
+      deleted_tab:['Deleted','محذوفة'],
+      search_logs:['Search logs...','البحث في السجلات...'],
+      no_point_changes:['No point changes recorded yet.','لا توجد تغييرات نقاط مسجلة بعد.'],
+      no_messages_audit:['No messages recorded yet.','لا توجد رسائل مسجلة بعد.'],
+      sent_message:['Sent Message','رسالة مرسلة'],
+      edited_message:['Edited Message','رسالة معدلة'],
+      deleted_message:['Deleted Message','رسالة محذوفة'],
+      before:['Before','قبل'],
+      after:['After','بعد'],
+      no_logs:['No activity logs yet.','لا توجد سجلات نشاط بعد.'],
+      no_matching_logs:['No matching logs.','لا توجد سجلات مطابقة.'],
+      promote_user:['Promote User','ترقية المستخدم'],
+      choose_role:['Choose the admin role to assign.','اختر الدور الإداري للتعيين.'],
+      ts_desc:['Can view open tickets and reply','يمكنه عرض التذاكر المفتوحة والرد'],
+      admin_desc:['Can view closed tickets and reopen','يمكنه عرض التذاكر المغلقة وإعادة فتحها'],
+      sa_desc:['Full access including user management','وصول كامل بما في ذلك إدارة المستخدمين'],
+      senior_admin_mgmt:['Senior Admin / Management','مشرف أول / إدارة'],
+      close_ticket_confirm:['Close this ticket?','إغلاق هذه التذكرة؟'],
+      close_ticket_desc:['The ticket will be marked as closed.','سيتم تعليم التذكرة كمغلقة.'],
+      reject_request:['Reject Request','رفض الطلب'],
+      reject_reason_desc:['You must provide a reason (visible to the requester).','يجب تقديم سبب (مرئي لمقدم الطلب).'],
+      reject_reason_ph:['Reason for rejection...','سبب الرفض...'],
+      reopen_confirm:['Reopen this ticket?','إعادة فتح هذه التذكرة؟'],
+      escalate_confirm:['Escalate this ticket to higher-level admins?','تصعيد هذه التذكرة لمشرفين أعلى؟'],
+      no_active_tickets:['No active tickets.','لا توجد تذاكر نشطة.'],
+      no_pts_data:['No points data yet.','لا توجد بيانات نقاط بعد.'],
+      could_not_load_lb:['Could not load leaderboard.','لم يتم تحميل لوحة المتصدرين.'],
+      replied_by:['Responded by','رد بواسطة'],
+      replies:['replies','ردود'],
+      closures:['closures','إغلاقات'],
+      claims:['claims','استلامات'],
+      no_requests_yet:['No redemption requests yet.','لا توجد طلبات استبدال بعد.'],
+      no_data_yet:['No data yet.','لا توجد بيانات بعد.'],
+      no_requests:['No requests.','لا توجد طلبات.'],
+      no_adjustments:['No adjustments yet.','لا توجد تعديلات بعد.'],
+      by_label:['by','بواسطة'],
+      boost_expired:['Expired','منتهي'],
+      remaining:['remaining','متبقي'],
+      boost_has_expired:['Boost has expired','انتهى التعزيز'],
+      earn_extra:['Earn extra points for the next','اكسب نقاط إضافية لمدة'],
+      no_requests_section:['No requests in this section.','لا توجد طلبات في هذا القسم.'],
+      complete:['Complete','إكمال'],
+      request_completed:['Your request has been Completed.','تم إكمال طلبك.'],
+      request_rejected:['Your request has been Rejected. Reason:','تم رفض طلبك. السبب:'],
+      no_products_yet:['No products yet. Click "Add Product" to create one.','لا توجد منتجات بعد. اضغط "إضافة منتج" لإنشاء واحد.'],
+      id_label:['ID:','المعرف:'],
+      valid_boost_pct:['Enter a valid boost percentage','أدخل نسبة تعزيز صحيحة'],
+      valid_duration:['Enter a valid duration','أدخل مدة صحيحة'],
+      activate_boost_confirm:['Activate a points boost?','تفعيل تعزيز النقاط؟'],
+      bonus:['bonus','مكافأة'],
+      admin_login:['Admin Login','دخول المشرف'],
+      replied_ticket:['Replied to Ticket','رد على تذكرة'],
+      closed_ticket_log:['Closed Ticket','إغلاق تذكرة'],
+      reopened_ticket:['Reopened Ticket','إعادة فتح تذكرة'],
+      escalated_ticket:['Escalated Ticket','تصعيد تذكرة'],
+      pts_adjusted:['Points Adjusted','تعديل نقاط'],
+      boost_activated:['Boost Activated','تفعيل تعزيز'],
+      exchange_approved:['Exchange Approved','موافقة على استبدال'],
+      exchange_rejected:['Exchange Rejected','رفض استبدال'],
+      ticket_opened:['Ticket Opened','فتح تذكرة'],
+      exchange_submitted:['Exchange Submitted','تقديم طلب استبدال'],
+      action:['Action','إجراء'],
+      seen_by_support:['Seen by support','شوهدت من الدعم'],
+      closing:['Closing...','جاري الإغلاق...'],
+      reopening:['Reopening...','جاري إعادة الفتح...'],
+      escalating:['Escalating...','جاري التصعيد...'],
+      confirm:['Confirm','تأكيد'],
+      no_matching_section:['No tickets in this section','لا توجد تذاكر في هذا القسم'],
+      matching_search:['matching your search','مطابقة لبحثك'],
+      users_label:['users','مستخدمين'],
+      user_count:['user','مستخدم'],
+      no_users:['No users found','لم يتم العثور على مستخدمين'],
+      products_count:['products','منتجات'],
+      product_count:['product','منتج'],
+      you:['You','أنت'],
+      order_hash:['Order #','طلب #'],
+      save:['Save','حفظ'],
+      cancel:['Cancel','إلغاء'],
+      assign_to_me:['Assign to me','تعيين لي'],
+      reassign_to_me:['Reassign to me','إعادة تعيين لي'],
+      unassign:['Unassign','إلغاء التعيين'],
+      assigned:['Assigned to you','تم التعيين لك'],
+      unassigned:['Unassigned','تم إلغاء التعيين'],
+      assigned_to_label:['Assigned to','معيّن إلى'],
+      typing_indicator:['typing...','يكتب...'],
+      search_my_tickets:['Search tickets...','البحث في التذاكر...'],
+      canned_responses:['Quick Replies','الردود الجاهزة'],
+      add_canned:['Add Quick Reply','إضافة رد جاهز'],
+      canned_title:['Title','العنوان'],
+      canned_en:['English content','المحتوى بالإنجليزية'],
+      canned_ar:['Arabic content','المحتوى بالعربية'],
+      no_canned:['No quick replies yet.','لا توجد ردود جاهزة بعد.'],
+      export_csv:['Export CSV','تصدير CSV'],
+      my_assigned:['My Tickets','تذاكري'],
+      new_message_sound:['New message','رسالة جديدة'],
+      charts_title:['Ticket Analytics','تحليلات التذاكر'],
+      tickets_per_day:['Tickets / Day','تذاكر / يوم'],
+      avg_response:['Avg Response','متوسط الاستجابة'],
+      file_too_large:['File too large. Max 5MB.','الملف كبير جداً. الحد الأقصى 5 ميجابايت.'],
+      allowed_files:['Allowed: images, PDF, TXT','المسموح: صور، PDF، TXT'],
+      enable_notifications:['Enable Notifications','تفعيل الإشعارات'],
+      notifications_enabled:['Notifications Enabled','الإشعارات مفعّلة'],
+      notifications_blocked:['Notifications Blocked','الإشعارات محظورة'],
+      notif_not_supported:['Your browser does not support notifications','متصفحك لا يدعم الإشعارات'],
+      notif_already_on:['Notifications are already enabled','الإشعارات مفعّلة مسبقاً'],
+      notif_denied:['Notifications are blocked. Enable them in browser settings.','الإشعارات محظورة. فعّلها من إعدادات المتصفح.'],
+      notif_enabled_success:['Desktop notifications enabled!','تم تفعيل إشعارات سطح المكتب!'],
+      copy_user_id:['Copy User ID','نسخ آيدي المستخدم'],
+      copied_user_id:['Discord ID copied','تم نسخ آيدي الديسكورد'],
+      copy_failed:['Copy failed','فشل النسخ'],
+      cannot_reply_resolved:['Cannot reply to resolved request','لا يمكن الرد على طلب تم حسمه'],
+      admin_replied:['Admin replied','تم رد الإدارة'],
+      waiting_for_support:['Waiting for support','بانتظار رد الدعم'],
+      new_ticket:['New Ticket','تذكرة جديدة']
+    };
+
+    window._nwT = T;
+    var langBtn = document.getElementById('nw-lang-btn');
+    var langSpan = langBtn.querySelector('span');
+
+    function getCurrentLang() {
+      return document.documentElement.lang === 'ar' ? 'ar' : 'en';
+    }
+
+    function applyLang(lang) {
+      var idx = lang === 'ar' ? 1 : 0;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      langSpan.textContent = lang === 'ar' ? 'English' : 'العربية';
+
+      var els = document.querySelectorAll('[data-i18n]');
+      for (var i = 0; i < els.length; i++) {
+        var key = els[i].getAttribute('data-i18n');
+        if (T[key]) els[i].textContent = T[key][idx];
+      }
+
+      var phEls = document.querySelectorAll('[data-i18n-ph]');
+      for (var j = 0; j < phEls.length; j++) {
+        var phKey = phEls[j].getAttribute('data-i18n-ph');
+        if (T[phKey]) phEls[j].placeholder = T[phKey][idx];
+      }
+
+      var titleEls = document.querySelectorAll('[data-i18n-title]');
+      for (var t = 0; t < titleEls.length; t++) {
+        var tKey = titleEls[t].getAttribute('data-i18n-title');
+        if (T[tKey]) titleEls[t].title = T[tKey][idx];
+      }
+    }
+
+    var savedLang = 'en';
+    try { savedLang = localStorage.getItem('nw-lang') || 'en'; } catch(e){}
+    if (savedLang === 'ar') applyLang('ar');
+    else { langSpan.textContent = 'العربية'; }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { var lb = document.getElementById('img-lightbox'); if (lb) lb.classList.add('hidden'); }
+    });
+
+    window._nwLangCallbacks = [];
+    langBtn.addEventListener('click', function() {
+      var next = getCurrentLang() === 'en' ? 'ar' : 'en';
+      applyLang(next);
+      try { localStorage.setItem('nw-lang', next); } catch(e){}
+      for (var k = 0; k < window._nwLangCallbacks.length; k++) { try { window._nwLangCallbacks[k](); } catch(e){} }
+    });
+  })();
+  </script>
 </body>
 </html>

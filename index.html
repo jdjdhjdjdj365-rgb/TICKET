@@ -1,16 +1,1494 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="h-full">
 <head>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.discordapp.com" crossorigin />
+  <script>(function(){try{if(localStorage.getItem('nw-theme')==='light')document.documentElement.classList.add('light');var l=localStorage.getItem('nw-lang');if(l==='ar'){document.documentElement.lang='ar';document.documentElement.dir='rtl';}}catch(e){}})()</script>
+  <title>Login - 7rz</title>
+  <script>var _tw=console.warn;console.warn=function(){if(arguments[0]&&typeof arguments[0]==='string'&&arguments[0].indexOf('cdn.tailwindcss.com')!==-1)return;_tw.apply(console,arguments)};</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#f8fafc',100:'#f1f5f9',200:'#e2e8f0',300:'#cbd5e1',400:'#94a3b8',500:'#64748b',600:'#475569',700:'#334155',800:'#1e293b',900:'#0f172a' },
+            discord: { DEFAULT:'#5865F2', dark:'#4752c4' },
+            surface: { DEFAULT:'#f8fafc', soft:'#f1f5f9', border:'rgba(0,0,0,0.08)', muted:'#e2e8f0' },
+            dm: { card:'#ffffff', elevated:'#f8fafc', input:'#f1f5f9' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          boxShadow: {
+            'glow': '0 0 20px rgba(100,116,139,0.2)',
+            'glow-lg': '0 0 40px rgba(100,116,139,0.25)',
+            'card': '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
+            'card-hover': '0 10px 25px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.1)',
+            'sidebar': '1px 0 0 0 rgba(0,0,0,0.05)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; position: relative; line-height: 1.5; }
+
+    /* Grid overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(100,116,139,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100,116,139,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #fx-cursor { display: none !important; }
+
+    /* Ambient mouse glow */
+    #fx-glow {
+      position: fixed;
+      width: 50vw;
+      height: 50vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(100,116,139,0.06) 0%, transparent 70%);
+      z-index: 0;
+      filter: blur(80px);
+      pointer-events: none;
+      transition: left 0.5s cubic-bezier(0.16,1,0.3,1), top 0.5s cubic-bezier(0.16,1,0.3,1);
+      will-change: left, top;
+    }
+
+    /* Particle canvas */
+    #fx-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    /* Floating ambient orbs */
+    .fx-orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(100px);
+      animation: fxFloat infinite alternate ease-in-out;
+    }
+    @keyframes fxFloat {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(20px, 12px) scale(1.04); }
+    }
+
+    button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    button:active { transform: scale(0.97); }
+    #ticket-thread, #admin-thread { contain: content; }
+    .ticket-item { contain: layout style; }
+
+    .fade-in { animation: fadeIn .25s cubic-bezier(.4,0,.2,1); }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+    .slide-up { animation: slideUp .3s cubic-bezier(.4,0,.2,1); }
+    @keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    .scale-in { animation: scaleIn .2s cubic-bezier(.4,0,.2,1); }
+    @keyframes scaleIn { from{opacity:0;transform:scale(.97)} to{opacity:1;transform:scale(1)} }
+
+    .status-pulse { animation: statusPulse .35s cubic-bezier(.4,0,.2,1); }
+    @keyframes statusPulse { 0%{transform:scale(1)} 50%{transform:scale(1.03);box-shadow:0 0 12px rgba(52,211,153,.2)} 100%{transform:scale(1)} }
+
+    .slide-in-right { animation: slideInRight .2s cubic-bezier(.4,0,.2,1); }
+    @keyframes slideInRight { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:translateX(0)} }
+
+    .slide-in-left { animation: slideInLeft .2s cubic-bezier(.4,0,.2,1); }
+    @keyframes slideInLeft { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+
+    .section-fade { animation: sectionFade .2s ease-out; }
+    @keyframes sectionFade { from{opacity:0} to{opacity:1} }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      .fx-orb, #fx-canvas, #fx-glow, #fx-cursor { display: none !important; }
+      body::after { display: none !important; }
+    }
+
+    .msg-bubble { word-break: break-word; white-space: pre-wrap; }
+
+    .btn-glow {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-glow::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(135deg, rgba(100,116,139,0.4), rgba(71,85,105,0.2));
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity .3s;
+      z-index: -1;
+      filter: blur(12px);
+    }
+    .btn-glow:hover::after { opacity: 1; }
+
+    .glass { background: rgba(17,24,39,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+    .sidebar-link {
+      transition: all .12s ease;
+    }
+    .sidebar-link:hover { background: rgba(100,116,139,0.1); }
+    .sidebar-link.active { background: rgba(100,116,139,0.15); color: #475569; }
+
+    .skeleton {
+      background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+    .skeleton-line { height: 12px; margin-bottom: 8px; }
+    .skeleton-line-sm { height: 10px; margin-bottom: 6px; width: 60%; }
+    .skeleton-circle { border-radius: 50%; }
+    .skeleton-card { padding: 16px; border-radius: 16px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    :focus-visible { outline: 2px solid rgba(100,116,139,0.5); outline-offset: 2px; border-radius: 8px; }
+    button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+      outline: 2px solid rgba(100,116,139,0.5); outline-offset: 2px;
+    }
+
+    .send-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.5s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .ticket-card-hover { transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+    .ticket-card-hover:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-color: rgba(100,116,139,0.15); }
+
+    .role-ring-1 { ring: 2px; --tw-ring-color: rgba(148,163,184,0.3); }
+    .role-ring-2 { ring: 2px; --tw-ring-color: rgba(96,165,250,0.4); }
+    .role-ring-3 { ring: 2px; --tw-ring-color: rgba(192,132,252,0.4); }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #64748b, #475569);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    
+
+    /* ===== Light Mode ===== */
+    html.light { color-scheme: light; }
+    html.light body { background-color: #f8fafc !important; color: #334155 !important; }
+    html.light body::after {
+      background-image:
+        linear-gradient(rgba(100,116,139,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100,116,139,0.05) 1px, transparent 1px) !important;
+    }
+    html.light .glass { background: rgba(255,255,255,0.88) !important; }
+    html.light .fx-orb { opacity: 0.12 !important; }
+    html.light #fx-canvas { opacity: 0.12 !important; }
+    html.light #fx-glow { opacity: 0.25 !important; }
+    html.light .gradient-text { background: linear-gradient(135deg, #64748b, #475569) !important; -webkit-background-clip: text !important; background-clip: text !important; }
+
+    html.light .bg-surface-soft { background-color: #f8fafc !important; }
+    html.light .bg-surface { background-color: #ffffff !important; }
+    html.light .bg-surface-muted { background-color: #f1f5f9 !important; }
+    html.light .bg-dm-card { background-color: #ffffff !important; }
+    html.light .bg-dm-elevated { background-color: #f8fafc !important; }
+    html.light .bg-dm-input { background-color: #f1f5f9 !important; }
+
+    html.light .text-white { color: #0f172a !important; }
+    html.light .text-slate-200 { color: #334155 !important; }
+    html.light .text-slate-300 { color: #475569 !important; }
+    html.light .text-slate-400 { color: #64748b !important; }
+    html.light .text-slate-500 { color: #94a3b8 !important; }
+    html.light .text-slate-600 { color: #475569 !important; }
+
+    html.light .border-white\\5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light .border-white\\10 { border-color: rgba(0,0,0,0.08) !important; }
+    html.light .border-white\\20 { border-color: rgba(0,0,0,0.12) !important; }
+    html.light .border-y.border-white\\5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light .border-b.border-white\\5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light .border-r.border-white\\5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light .border-t.border-white\\5 { border-color: rgba(0,0,0,0.06) !important; }
+    html.light [class*="border-white"] { border-color: rgba(0,0,0,0.07) !important; }
+
+    html.light .bg-white\\5 { background-color: rgba(0,0,0,0.03) !important; }
+    html.light .bg-white\\10 { background-color: rgba(0,0,0,0.05) !important; }
+    html.light .bg-white\\15 { background-color: rgba(0,0,0,0.06) !important; }
+    html.light .hover\\:bg-white\\5:hover { background-color: rgba(0,0,0,0.04) !important; }
+    html.light .hover\\:bg-white\\15:hover { background-color: rgba(0,0,0,0.07) !important; }
+    html.light .hover\\:text-white:hover { color: #0f172a !important; }
+    html.light .hover\\:text-slate-300:hover { color: #1e293b !important; }
+    html.light .hover\\:border-white\\20:hover { border-color: rgba(0,0,0,0.12) !important; }
+
+    html.light .ring-white\\10 { --tw-ring-color: rgba(0,0,0,0.06) !important; }
+    html.light .ring-2.ring-white\\10 { --tw-ring-color: rgba(0,0,0,0.06) !important; }
+    html.light .ring-1.ring-white\\10 { --tw-ring-color: rgba(0,0,0,0.06) !important; }
+
+    html.light .shadow-card { box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04) !important; }
+    html.light .shadow-card-hover, html.light .hover\\:shadow-card-hover:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.06) !important; }
+
+    html.light .sidebar-link:hover { background: rgba(100,116,139,0.08) !important; }
+    html.light .sidebar-link.active { background: rgba(100,116,139,0.1) !important; color: #475569 !important; }
+
+    html.light .skeleton { background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%) !important; background-size: 200% 100% !important; }
+    html.light :focus-visible { outline-color: rgba(100,116,139,0.5) !important; }
+    html.light .ticket-card-hover:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important; border-color: rgba(100,116,139,0.2) !important; }
+
+    html.light ::-webkit-scrollbar-thumb { background: #cbd5e1 !important; }
+    html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8 !important; }
+
+    html.light .btn-glow::after { background: linear-gradient(135deg, rgba(100,116,139,0.3), rgba(71,85,105,0.15)) !important; }
+
+    html.light .shadow-lg.shadow-green-500\\25 { box-shadow: 0 10px 15px -3px rgba(100,116,139,0.15), 0 4px 6px -4px rgba(100,116,139,0.1) !important; }
+    html.light .shadow-lg.shadow-green-500\\20 { box-shadow: 0 10px 15px -3px rgba(100,116,139,0.12), 0 4px 6px -4px rgba(100,116,139,0.08) !important; }
+
+    html.light .bg-gradient-to-br.from-surface-soft { background: linear-gradient(to bottom right, #f8fafc, #f8fafc, rgba(100,116,139,0.05)) !important; }
+
+    /* ===== Floating Settings Control ===== */
+    #nw-toggles {
+      position: fixed;
+      bottom: 120px;
+      left: 16px;
+      z-index: 99999;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      gap: 0;
+      padding: 0;
+      border-radius: 14px;
+      background: rgba(17,24,39,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    html.light #nw-toggles {
+      background: rgba(255,255,255,0.95);
+      border-color: rgba(0,0,0,0.06);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+    }
+
+    #nw-toggle-trigger {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+    #nw-toggle-trigger:hover { color: #4ade80; }
+    html.light #nw-toggle-trigger { color: #64748b; }
+    html.light #nw-toggle-trigger:hover { color: #16a34a; }
+
+    #nw-toggle-trigger svg {
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    #nw-toggles.expanded #nw-toggle-trigger svg {
+      transform: rotate(90deg);
+    }
+
+    #nw-toggle-panel {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 0;
+      opacity: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: max-width 0.3s cubic-bezier(0.4,0,0.2,1),
+                  opacity 0.25s ease,
+                  padding 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    #nw-toggles.expanded #nw-toggle-panel {
+      max-width: 200px;
+      opacity: 1;
+      padding: 0 2px 0 6px;
+    }
+
+    #nw-toggle-panel .nw-sep {
+      width: 1px;
+      height: 18px;
+      background: rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+    html.light #nw-toggle-panel .nw-sep {
+      background: rgba(0,0,0,0.08);
+    }
+
+    #nw-toggle-panel button {
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    #nw-theme-btn { width: 32px; }
+    #nw-lang-btn { width: auto; padding: 0 10px; }
+    #nw-toggle-panel button:hover {
+      background: rgba(34,197,94,0.15);
+      color: #4ade80;
+    }
+    html.light #nw-toggle-panel button { color: #64748b; }
+    html.light #nw-toggle-panel button:hover {
+      background: rgba(34,197,94,0.1);
+      color: #16a34a;
+    }
+
+    
+    @media (max-width: 768px) {
+      #nw-toggles { bottom: 14px; left: 14px; right: auto; }
+      #nw-toggle-trigger { width: 36px; height: 36px; }
+      #nw-toggle-panel button { height: 28px; }
+      #nw-theme-btn { width: 28px; }
+    }
+
+    /* ===== RTL Adjustments ===== */
+    html[dir="rtl"] #nw-toggles { left: auto; right: 16px; flex-direction: row; }
+    html[dir="rtl"] #nw-toggles.expanded #nw-toggle-panel { padding: 0 6px 0 2px; }
+    @media (max-width: 768px) {
+      html[dir="rtl"] #nw-toggles { right: 14px; left: auto; }
+    }
+    html[dir="rtl"] .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-right: 0; }
+    html[dir="rtl"] .gap-2 { gap: 0.5rem; }
+    html[dir="rtl"] .text-left { text-align: right; }
+    html[dir="rtl"] .text-right { text-align: left; }
+    html[dir="rtl"] .ml-auto { margin-left: 0; margin-right: auto; }
+    html[dir="rtl"] .mr-auto { margin-right: 0; margin-left: auto; }
+
+    /* Hamburger menu — right-side drawer */
+    @keyframes mobMenuSlideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    @keyframes mobMenuSlideOut { from { transform: translateX(0); } to { transform: translateX(100%); } }
+    @keyframes mobOverlayIn { from { opacity: 0; } to { opacity: 1; } }
+    body.has-mob-menu #nw-toggles { display: none !important; }
+    #mob-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 9998; animation: mobOverlayIn 0.2s ease; }
+
+    /* ===== Mobile Compact Mode (<=768px) ===== */
+    @media (max-width: 768px) {
+      /* Disable desktop FX on mobile */
+      #fx-cursor, #fx-glow, #fx-canvas, .fx-orb { display: none !important; }
+      body::after { display: none !important; }
+
+      /* Mobile header readability */
+      header.lg\:hidden, header { height: 52px !important; padding-left: 12px !important; padding-right: 12px !important; }
+      header .font-bold { font-size: 13px !important; }
+      header img { width: 24px !important; height: 24px !important; }
+
+      /* Better touch targets in mobile drawer */
+      .mobile-nav { padding: 8px 10px !important; font-size: 12px !important; min-height: 40px !important; }
+
+      /* Main content spacing on mobile */
+      main .px-5, main .lg\:px-8 { padding-left: 10px !important; padding-right: 10px !important; }
+      main .pt-3 { padding-top: 8px !important; }
+      main .pb-3 { padding-bottom: 8px !important; }
+
+      /* Page titles */
+      h1.text-lg { font-size: 14px !important; }
+      h1.text-2xl { font-size: 16px !important; }
+
+      /* Ticket list & detail - full screen toggle */
+      .mob-hide { display: none !important; }
+      .mob-fullscreen {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 40 !important;
+        border-radius: 0 !important;
+        border: none !important;
+        margin: 0 !important;
+        max-height: 100dvh !important;
+        height: 100dvh !important;
+      }
+
+      /* Ticket header/content on mobile */
+      #ticket-header { padding: 10px 12px !important; gap: 8px !important; }
+      #ticket-header h2 { font-size: 13px !important; max-width: 170px !important; }
+      #ticket-countdown-bar { padding: 6px 12px !important; }
+      #ticket-rating-area { padding: 8px 12px !important; }
+      #ticket-thread { padding: 10px 12px !important; }
+
+      /* Compact ticket cards */
+      .ticket-item { padding: 8px 10px !important; }
+      .ticket-item .text-sm { font-size: 11px !important; }
+      .ticket-item .text-xs { font-size: 10px !important; }
+      .ticket-item .text-\[11px\] { font-size: 9px !important; }
+
+      /* Compact tab buttons */
+      .tab-btn, .section-tab { padding: 5px 10px !important; font-size: 11px !important; }
+      .section-tab .section-count { font-size: 9px !important; }
+      .section-tab .w-2 { width: 5px !important; height: 5px !important; }
+
+      /* Stat cards */
+      .shadow-card { padding: 10px !important; }
+      .shadow-card .text-3xl { font-size: 20px !important; }
+      .shadow-card .text-xs { font-size: 9px !important; }
+      .shadow-card .w-9 { width: 28px !important; height: 28px !important; }
+
+      /* Compact message bubbles */
+      .msg-wrap { gap: 6px !important; }
+      .msg-wrap img.rounded-full { width: 24px !important; height: 24px !important; }
+      .msg-wrap .max-w-\[75\%\] { max-width: 88% !important; }
+      .msg-wrap .rounded-xl { padding: 6px 10px !important; }
+      .msg-wrap .text-xs { font-size: 10px !important; }
+      .msg-wrap .text-\[11px\] { font-size: 10px !important; }
+      .msg-wrap .text-\[13px\] { font-size: 12px !important; }
+      .msg-bubble { font-size: 13px !important; line-height: 1.5 !important; }
+      #ticket-thread, #admin-thread { padding: 10px !important; }
+      #ticket-thread .space-y-2\.5 > * + *, .space-y-2\.5 > :not([hidden]) ~ :not([hidden]) { margin-top: 4px !important; }
+      #admin-thread .space-y-3 > * + *, .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 4px !important; }
+
+      /* Compact action buttons on messages */
+      .msg-actions, .adm-msg-actions { padding: 1px 2px !important; gap: 0 !important; }
+      .msg-actions button, .adm-msg-actions button { width: 28px !important; height: 28px !important; padding: 4px !important; }
+      .msg-actions svg, .adm-msg-actions svg { width: 14px !important; height: 14px !important; }
+
+      /* Reply area: sticky + safe area + larger controls */
+      #ticket-reply-area, #admin-reply-area {
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 6 !important;
+        background: rgba(13,17,23,0.92) !important;
+        backdrop-filter: blur(10px) !important;
+        padding-bottom: max(6px, env(safe-area-inset-bottom)) !important;
+      }
+      #ticket-reply-area .flex, #admin-reply-area .flex { padding: 8px 10px !important; gap: 8px !important; }
+      #ticket-reply-area img { width: 24px !important; height: 24px !important; }
+      #reply-content, #admin-reply-content { font-size: 14px !important; padding: 10px 12px !important; min-height: 42px !important; }
+      #btn-send-reply, #btn-admin-reply { min-width: 42px !important; min-height: 42px !important; padding: 10px 12px !important; }
+      #btn-send-reply svg, #btn-admin-reply svg { width: 16px !important; height: 16px !important; }
+      #btn-dash-upload, #btn-admin-upload { min-width: 40px !important; min-height: 40px !important; padding: 8px !important; }
+      #btn-dash-upload svg, #btn-admin-upload svg { width: 16px !important; height: 16px !important; }
+
+      /* Compact ticket header */
+      #ticket-header, #admin-ticket-header { padding: 10px 12px !important; }
+      #ticket-header h2, #admin-header-info h2 { font-size: 13px !important; }
+      #admin-ticket-header .flex.items-center.gap-2 button { padding: 6px 10px !important; font-size: 11px !important; min-height: 34px !important; }
+      #admin-ticket-header .flex.items-center.gap-2 button svg { width: 14px !important; height: 14px !important; }
+
+      /* Back button for mobile full-screen chat */
+      .mob-back-btn {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        margin-right: 8px;
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .mob-back-btn:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+
+      /* New ticket form compact */
+      #new-ticket-form .p-6, #step-category, #step-details { padding: 14px !important; }
+      .category-card { padding: 14px !important; }
+      .category-card .w-11 { width: 36px !important; height: 36px !important; }
+      .category-card .mb-4 { margin-bottom: 8px !important; }
+      .category-card h3 { font-size: 13px !important; }
+      .category-card p { font-size: 11px !important; }
+
+      /* Compact buttons */
+      .btn-glow { padding: 8px 14px !important; font-size: 13px !important; }
+      .btn-glow svg { width: 14px !important; height: 14px !important; }
+
+      /* Modals compact */
+      .fixed.inset-0.z-50 .max-w-md, .fixed.inset-0.z-50 .max-w-sm { max-width: calc(100vw - 24px) !important; }
+      .fixed.inset-0.z-50 .p-6 { padding: 14px !important; }
+      .fixed.inset-0.z-50 h3 { font-size: 14px !important; }
+
+      /* ===== Toast Notifications ===== */
+      #nw-toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+      html[dir="rtl"] #nw-toast-container { right: auto; left: 20px; }
+      .nw-toast {
+        pointer-events: auto; display: flex; align-items: center; gap: 12px;
+        padding: 14px 20px; border-radius: 16px; font-size: 13px; font-weight: 500; color: #fff;
+        backdrop-filter: blur(20px) saturate(1.6); -webkit-backdrop-filter: blur(20px) saturate(1.6);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.06) inset;
+        max-width: 400px; word-break: break-word;
+        transform: translateY(-8px) scale(0.96); opacity: 0;
+        animation: nwToastIn 0.45s cubic-bezier(0.16,1,0.3,1) forwards;
+      }
+      .nw-toast.removing { animation: nwToastOut 0.35s cubic-bezier(0.4,0,1,1) forwards; }
+      .nw-toast-success { background: linear-gradient(135deg, rgba(22,163,74,0.88), rgba(16,120,56,0.92)); border: 1px solid rgba(74,222,128,0.25); }
+      .nw-toast-error { background: linear-gradient(135deg, rgba(220,38,38,0.88), rgba(180,28,28,0.92)); border: 1px solid rgba(248,113,113,0.25); }
+      .nw-toast-warning { background: linear-gradient(135deg, rgba(202,138,4,0.88), rgba(160,110,0,0.92)); border: 1px solid rgba(250,204,21,0.25); }
+      .nw-toast-info { background: linear-gradient(135deg, rgba(37,99,235,0.88), rgba(28,76,190,0.92)); border: 1px solid rgba(96,165,250,0.25); }
+      .nw-toast svg { flex-shrink: 0; width: 20px !important; height: 20px !important; min-width: 20px; max-width: 20px; opacity: 0.9; }
+      .nw-toast span:not(.nw-toast-close) { line-height: 1.4; }
+      .nw-toast-close { margin-left: auto; cursor: pointer; opacity: 0.5; transition: opacity 0.2s, transform 0.2s; padding: 4px; font-size: 16px; line-height: 1; border-radius: 6px; }
+      .nw-toast-close:hover { opacity: 1; transform: scale(1.15); background: rgba(255,255,255,0.1); }
+      html[dir="rtl"] .nw-toast-close { margin-left: 0; margin-right: auto; }
+      html.light .nw-toast-success { background: linear-gradient(135deg, rgba(22,163,74,0.95), rgba(16,120,56,0.97)); }
+      html.light .nw-toast-error { background: linear-gradient(135deg, rgba(220,38,38,0.95), rgba(180,28,28,0.97)); }
+      html.light .nw-toast-warning { background: linear-gradient(135deg, rgba(202,138,4,0.95), rgba(160,110,0,0.97)); }
+      html.light .nw-toast-info { background: linear-gradient(135deg, rgba(37,99,235,0.95), rgba(28,76,190,0.97)); }
+      .nw-toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: rgba(255,255,255,0.35); border-radius: 0 0 16px 16px; animation: nwToastProgress 4s linear forwards; }
+      @keyframes nwToastProgress { from { width: 100%; } to { width: 0%; } }
+      @keyframes nwToastIn { from { opacity: 0; transform: translateY(-8px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+      @keyframes nwToastOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-12px) scale(0.94); } }
+      html[dir="rtl"] .nw-toast { animation-name: nwToastIn; }
+      html[dir="rtl"] .nw-toast.removing { animation-name: nwToastOut; }
+      @media (max-width: 768px) {
+        #nw-toast-container { top: auto; bottom: 16px; right: 10px; left: 10px; }
+        html[dir="rtl"] #nw-toast-container { right: 10px; }
+        .nw-toast { max-width: 100%; font-size: 12px; padding: 12px 16px; border-radius: 14px; }
+      }
+
+      /* Compact search inputs */
+      #search-q, #category-filter { padding-top: 6px !important; padding-bottom: 6px !important; font-size: 11px !important; }
+      #category-filter { min-width: 100px !important; }
+
+      /* Compact gap in ticket grid */
+      .grid.grid-cols-1 { gap: 6px !important; }
+
+      /* Overview stats compact */
+      #view-overview .grid { gap: 8px !important; }
+      #view-overview .p-5 { padding: 10px !important; }
+
+      /* Rating area compact */
+      #ticket-rating-area { padding: 6px 10px !important; }
+      #ticket-rating-area .text-sm { font-size: 11px !important; }
+
+      /* Product combo dropdown */
+      #product-dropdown { max-height: 200px !important; }
+
+      /* Table cells compact */
+      table td, table th { padding: 6px 8px !important; font-size: 11px !important; }
+
+      /* Points/Exchange views compact */
+      #view-points, #view-exchange, #view-orders, #view-audit, #view-products, #view-users { padding: 10px !important; }
+      #view-points h1, #view-exchange h1, #view-orders h1, #view-audit h1, #view-products h1, #view-users h1 { font-size: 16px !important; }
+
+      /* Countdown bar compact */
+      #ticket-countdown-bar, #admin-countdown-bar { padding: 4px 10px !important; }
+    }
+  </style>
 </head>
-<body>
-<div class="box">
-<h2>Login</h2>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-<button onclick="register()">Register</button>
-</div>
-<script src="app.js"></script>
+<body class="h-full bg-surface-soft text-slate-200 antialiased">
+  <!-- FX layers -->
+  <div id="fx-cursor"></div>
+  <div id="fx-glow"></div>
+  <canvas id="fx-canvas"></canvas>
+
+  <!-- Floating Settings Control -->
+  <div id="nw-toggles">
+    <button id="nw-toggle-trigger" type="button" aria-label="Settings">
+      <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    </button>
+    <div id="nw-toggle-panel">
+      <div class="nw-sep"></div>
+      <button id="nw-theme-btn" type="button" aria-label="Toggle theme">
+        <svg id="nw-icon-sun" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+        <svg id="nw-icon-moon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+      </button>
+      <div class="nw-sep"></div>
+      <button id="nw-lang-btn" type="button" aria-label="Toggle language">
+        <span class="text-[11px] font-bold leading-none whitespace-nowrap">العربية</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="nw-toast-container"></div>
+  
+  <div class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-40 border-b border-white/5">
+      <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <img src="https://cdn.rmz.gg/store/logo/ca1c1aa1fe5f4e3357522d5580b2a52efae79d99.png" alt="NitWit" class="w-8 h-8 rounded-lg object-cover" />
+          <span class="text-lg font-bold text-white tracking-tight">7rz</span>
+        </div>
+        <a id="nav-signin" href="/auth/login" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-all duration-200 border border-white/10 hover:border-white/20 hover:shadow-md">
+          <span data-i18n="sign_in">Sign in</span>
+          <svg class="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-surface-soft via-surface-soft to-green-950/20"></div>
+      <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
+      <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-green-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4"></div>
+
+      <div class="relative max-w-6xl mx-auto px-6 pt-20 pb-28 lg:pt-32 lg:pb-36">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500/15 to-emerald-500/10 border border-green-500/25 text-green-400 text-xs font-semibold px-5 py-2 rounded-full mb-6 slide-up shadow-sm shadow-green-500/10">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-sm shadow-green-400/50"></span>
+            <span data-i18n="ai_platform">AI-Powered Support Platform</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1] mb-6 slide-up" style="animation-delay:.05s">
+            <span data-i18n="fast_smart">Fast & Smart</span><br/>
+            <span class="gradient-text" data-i18n="customer_support">Customer Support</span>
+          </h1>
+
+          <p class="text-lg sm:text-xl lg:text-[22px] text-slate-400 leading-relaxed max-w-2xl mx-auto mb-10 slide-up" style="animation-delay:.1s" data-i18n="hero_desc">
+            Get instant AI-powered replies in Arabic and English. Create tickets, track progress, and resolve issues faster than ever.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 slide-up" style="animation-delay:.15s">
+            <a href="/auth/discord" class="btn-glow relative inline-flex items-center gap-3 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-slate-500/25 hover:shadow-xl hover:shadow-slate-500/30 hover:-translate-y-0.5 text-base">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 127.14 96.36"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
+              <span data-i18n="continue_discord">Continue with Discord</span>
+            </a>
+            <a href="#features" class="inline-flex items-center gap-2 text-slate-400 hover:text-white font-medium text-base transition-all hover:gap-3">
+              <span data-i18n="learn_more">Learn more</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-20 grid grid-cols-3 max-w-lg mx-auto gap-8 slide-up" style="animation-delay:.2s">
+          <div class="text-center">
+            <div class="text-2xl sm:text-3xl font-bold text-white">99%</div>
+            <div class="text-xs sm:text-sm text-slate-500 mt-0.5" data-i18n="uptime">Uptime</div>
+          </div>
+          <div class="text-center border-x border-white/10">
+            <div class="text-2xl sm:text-3xl font-bold text-white">&lt;1m</div>
+            <div class="text-xs sm:text-sm text-slate-500 mt-0.5" data-i18n="ai_response">AI Response</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl sm:text-3xl font-bold text-white">24/7</div>
+            <div class="text-xs sm:text-sm text-slate-500 mt-0.5" data-i18n="available">Available</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-24 bg-surface border-y border-white/5">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4" data-i18n="everything_need">Everything you need</h2>
+          <p class="text-lg text-slate-400 max-w-xl mx-auto" data-i18n="features_desc">A complete support platform designed for speed, intelligence, and seamless communication.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="group p-6 rounded-2xl border border-white/5 bg-dm-elevated hover:border-green-500/20 hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5">
+            <div class="w-11 h-11 rounded-xl bg-green-500/10 flex items-center justify-center mb-4 group-hover:bg-green-500/20 group-hover:shadow-md group-hover:shadow-green-500/10 transition-all">
+              <svg class="w-5.5 h-5.5 text-green-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-2" data-i18n="ai_support">AI Support</h3>
+            <p class="text-sm text-slate-400 leading-relaxed" data-i18n="ai_support_desc">Instant AI-powered responses that understand context and resolve issues intelligently.</p>
+          </div>
+
+          <div class="group p-6 rounded-2xl border border-white/5 bg-dm-elevated hover:border-green-500/20 hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5">
+            <div class="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 group-hover:shadow-md group-hover:shadow-blue-500/10 transition-all">
+              <svg class="w-5.5 h-5.5 text-blue-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-2" data-i18n="fast_replies">Fast Replies</h3>
+            <p class="text-sm text-slate-400 leading-relaxed" data-i18n="fast_replies_desc">Get answers in seconds, not hours. Our AI learns from every interaction to improve.</p>
+          </div>
+
+          <div class="group p-6 rounded-2xl border border-white/5 bg-dm-elevated hover:border-green-500/20 hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5">
+            <div class="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 group-hover:shadow-md group-hover:shadow-purple-500/10 transition-all">
+              <svg class="w-5.5 h-5.5 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364V3M3 11.25h10.5"/></svg>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-2" data-i18n="multilingual">Multilingual</h3>
+            <p class="text-sm text-slate-400 leading-relaxed" data-i18n="multilingual_desc">Full Arabic and English support with automatic language detection and localized replies.</p>
+          </div>
+
+          <div class="group p-6 rounded-2xl border border-white/5 bg-dm-elevated hover:border-green-500/20 hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5">
+            <div class="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4 group-hover:bg-amber-500/20 group-hover:shadow-md group-hover:shadow-amber-500/10 transition-all">
+              <svg class="w-5.5 h-5.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-2" data-i18n="secure">Secure</h3>
+            <p class="text-sm text-slate-400 leading-relaxed" data-i18n="secure_desc">Discord OAuth authentication with role-based admin access and full audit logging.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-surface-soft via-surface-soft to-green-950/20"></div>
+      <div class="relative max-w-3xl mx-auto px-6 text-center">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4" data-i18n="ready_start">Ready to get started?</h2>
+        <p class="text-lg text-slate-400 mb-8" data-i18n="cta_desc">Create your first ticket in seconds. No signup forms, just Discord.</p>
+        <a href="/auth/login" class="btn-glow relative inline-flex items-center gap-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/30 hover:-translate-y-0.5">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 127.14 96.36"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
+          <span data-i18n="get_started">Get Started with Discord</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-surface border-t border-white/5 py-12">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <img src="https://cdn.rmz.gg/store/logo/ca1c1aa1fe5f4e3357522d5580b2a52efae79d99.png" alt="NitWit" class="w-7 h-7 rounded-lg object-cover" />
+            <span class="text-sm font-semibold text-slate-300">NitWit</span>
+          </div>
+          <div class="flex items-center gap-6 text-sm text-slate-600">
+            <span data-i18n="privacy">Privacy</span>
+            <span data-i18n="terms">Terms</span>
+            <span data-i18n="contact">Contact</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  <script>
+    (function() {
+      var p = new URLSearchParams(window.location.search);
+      var r = p.get('redirect');
+      if (r) {
+        var suffix = '?redirect=' + encodeURIComponent(r);
+        document.querySelectorAll('a[href="/auth/login"]').forEach(function(a) { a.href += suffix; });
+      }
+    })();
+  </script>
+
+  <script>
+  window._nwNotifSound = null;
+  window._nwNotifLastAt = 0;
+  window._nwNotifCooldownMs = 900;
+  window.playNotifSound = function() {
+    try {
+      var now = Date.now();
+      if (now - (window._nwNotifLastAt || 0) < (window._nwNotifCooldownMs || 900)) return;
+      window._nwNotifLastAt = now;
+      if (!window._nwNotifSound) {
+        var ac = new (window.AudioContext || window.webkitAudioContext)();
+        window._nwNotifSound = ac;
+      }
+      var ctx = window._nwNotifSound;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.25);
+    } catch(e) {}
+  };
+
+  window.showToast = function(msg, type) {
+    type = type || 'error';
+    var container = document.getElementById('nw-toast-container');
+    if (!container) return;
+    var icons = {
+      success: '<svg width="20" height="20" style="width:20px;height:20px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+      error: '<svg width="20" height="20" style="width:20px;height:20px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>',
+      warning: '<svg width="20" height="20" style="width:20px;height:20px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"/></svg>',
+      info: '<svg width="20" height="20" style="width:20px;height:20px;flex-shrink:0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>'
+    };
+    var el = document.createElement('div');
+    el.className = 'nw-toast nw-toast-' + type;
+    el.style.position = 'relative';
+    el.style.overflow = 'hidden';
+    el.innerHTML = (icons[type] || icons.error) + '<span>' + msg + '</span><span class="nw-toast-close">&times;</span><div class="nw-toast-progress"></div>';
+    container.appendChild(el);
+    var removeTimer = setTimeout(function() { el.classList.add('removing'); setTimeout(function(){ el.remove(); }, 350); }, 4000);
+    el.querySelector('.nw-toast-close').onclick = function(){ clearTimeout(removeTimer); el.classList.add('removing'); setTimeout(function(){ el.remove(); }, 350); };
+  };
+  </script>
+
+  <script>
+  (function(){
+    var cursor = document.getElementById('fx-cursor');
+    var glow = document.getElementById('fx-glow');
+    var canvas = document.getElementById('fx-canvas');
+    if (!cursor || !glow || !canvas) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    var particles = [];
+    var mouseX = -9999, mouseY = -9999;
+    var isMobile = !window.matchMedia('(pointer: fine)').matches;
+    var prefersReducedMotion = false;
+    try { prefersReducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch(e) {}
+    var lowPowerDevice = false;
+    try {
+      var mem = Number(navigator.deviceMemory || 0);
+      var cores = Number(navigator.hardwareConcurrency || 0);
+      lowPowerDevice = (mem > 0 && mem <= 4) || (cores > 0 && cores <= 4);
+    } catch(e) {}
+    var pathname = (window.location && window.location.pathname) ? window.location.pathname : '';
+    var busyAppView = pathname === '/dashboard' || pathname.indexOf('/admin') === 0 || pathname.indexOf('/support') === 0;
+    var disableFx = isMobile || prefersReducedMotion || lowPowerDevice || busyAppView;
+    if (disableFx) {
+      canvas.style.display = 'none';
+      cursor.style.display = 'none';
+      glow.style.display = 'none';
+      return;
+    }
+
+    /* ---- Custom Cursor + Mouse Glow (RAF-throttled) ---- */
+    var _rafMouse = null;
+    window.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX; mouseY = e.clientY;
+      if (!_rafMouse) {
+        _rafMouse = requestAnimationFrame(function() {
+          cursor.style.left = mouseX + 'px';
+          cursor.style.top = mouseY + 'px';
+          glow.style.left = (mouseX - window.innerWidth * 0.25) + 'px';
+          glow.style.top = (mouseY - window.innerWidth * 0.25) + 'px';
+          _rafMouse = null;
+        });
+      }
+    });
+
+    cursor.style.transform = 'translate(-50%,-50%)';
+
+    /* Cursor hover effect on interactive elements */
+    document.addEventListener('mouseover', function(e) {
+      var t = e.target;
+      if (t.closest && (t.closest('a') || t.closest('button') || t.closest('input') || t.closest('textarea') || t.closest('select'))) {
+        cursor.style.transform = 'translate(-50%,-50%) scale(2.5)';
+        cursor.style.background = 'rgba(34,197,94,0.5)';
+      }
+    });
+    document.addEventListener('mouseout', function(e) {
+      var t = e.target;
+      if (t.closest && (t.closest('a') || t.closest('button') || t.closest('input') || t.closest('textarea') || t.closest('select'))) {
+        cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+        cursor.style.background = '#22c55e';
+      }
+    });
+
+    /* ---- Particles ---- */
+    function Particle() {
+      this.init();
+    }
+    Particle.prototype.init = function() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 1.8 + 0.5;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = (Math.random() - 0.5) * 0.4;
+      this.life = Math.random() * 100;
+    };
+    Particle.prototype.update = function() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.life++;
+      if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    };
+    Particle.prototype.draw = function() {
+      var opacity = (Math.sin(this.life * 0.04) + 1) / 2 * 0.5 + 0.15;
+      ctx.fillStyle = 'rgba(34,197,94,' + opacity + ')';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    function initParticles() {
+      if (disableFx) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      particles = [];
+      for (var i = 0; i < 18; i++) particles.push(new Particle());
+    }
+
+    var _frameSkip = 0;
+    function animate() {
+      if (disableFx || document.hidden) { if (!document.hidden) requestAnimationFrame(animate); return; }
+      _frameSkip++;
+      if (_frameSkip % 3 !== 0) { requestAnimationFrame(animate); return; }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var connDistSq = 8100;
+      var mouseDistSq = 25600;
+      for (var i = 0; i < particles.length; i++) {
+        for (var j = i + 1; j < particles.length; j++) {
+          var dx = particles[i].x - particles[j].x;
+          var dy = particles[i].y - particles[j].y;
+          var dSq = dx * dx + dy * dy;
+          if (dSq < connDistSq) {
+            var d = Math.sqrt(dSq);
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(34,197,94,' + ((1 - d / 90) * 0.12) + ')';
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      for (var k = 0; k < particles.length; k++) {
+        particles[k].update();
+        particles[k].draw();
+        if (mouseX > 0) {
+          var mdx = particles[k].x - mouseX;
+          var mdy = particles[k].y - mouseY;
+          var mSq = mdx * mdx + mdy * mdy;
+          if (mSq < mouseDistSq) {
+            var mDist = Math.sqrt(mSq);
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(74,222,128,' + ((1 - mDist / 160) * 0.2) + ')';
+            ctx.lineWidth = 0.6;
+            ctx.moveTo(particles[k].x, particles[k].y);
+            ctx.lineTo(mouseX, mouseY);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    document.addEventListener('visibilitychange', function() { if (!document.hidden && !disableFx) requestAnimationFrame(animate); });
+
+    if (!disableFx) {
+      initParticles();
+      requestAnimationFrame(animate);
+      window.addEventListener('resize', initParticles);
+      var orbColors = ['rgba(34,197,94,0.10)','rgba(22,163,74,0.06)','rgba(255,255,255,0.02)'];
+      for (var oi = 0; oi < 2; oi++) {
+        var orb = document.createElement('div');
+        orb.className = 'fx-orb';
+        var sz = (Math.random() * 300 + 200) + 'px';
+        orb.style.width = sz; orb.style.height = sz;
+        orb.style.left = (Math.random() * 100) + 'vw';
+        orb.style.top = (Math.random() * 100) + 'vh';
+        orb.style.background = 'radial-gradient(circle, ' + orbColors[oi % orbColors.length] + ' 0%, transparent 70%)';
+        orb.style.animationDuration = (Math.random() * 12 + 12) + 's';
+        orb.style.animationDelay = (Math.random() * 4) + 's';
+        document.body.appendChild(orb);
+      }
+    }
+  })();
+  </script>
+
+  <script>
+  (function(){
+    /* ===== Expandable Settings Control ===== */
+    var togglesEl = document.getElementById('nw-toggles');
+    var triggerBtn = document.getElementById('nw-toggle-trigger');
+    var isTouchDevice = !window.matchMedia('(pointer: fine)').matches;
+    var collapseTimer = null;
+
+    function expand() {
+      if (collapseTimer) { clearTimeout(collapseTimer); collapseTimer = null; }
+      togglesEl.classList.add('expanded');
+    }
+    function collapse() {
+      togglesEl.classList.remove('expanded');
+    }
+    function scheduleCollapse() {
+      if (collapseTimer) clearTimeout(collapseTimer);
+      collapseTimer = setTimeout(collapse, 400);
+    }
+
+    if (!isTouchDevice) {
+      togglesEl.addEventListener('mouseenter', expand);
+      togglesEl.addEventListener('mouseleave', scheduleCollapse);
+    }
+
+    triggerBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (togglesEl.classList.contains('expanded')) { collapse(); }
+      else { expand(); }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!togglesEl.contains(e.target)) collapse();
+    });
+
+    /* ===== Theme Toggle ===== */
+    var themeBtn = document.getElementById('nw-theme-btn');
+    var sunIcon = document.getElementById('nw-icon-sun');
+    var moonIcon = document.getElementById('nw-icon-moon');
+
+    function syncThemeIcons() {
+      var isLight = document.documentElement.classList.contains('light');
+      if (isLight) { sunIcon.classList.add('hidden'); moonIcon.classList.remove('hidden'); }
+      else { sunIcon.classList.remove('hidden'); moonIcon.classList.add('hidden'); }
+    }
+    syncThemeIcons();
+
+    themeBtn.addEventListener('click', function() {
+      document.documentElement.classList.toggle('light');
+      var isLight = document.documentElement.classList.contains('light');
+      try { localStorage.setItem('nw-theme', isLight ? 'light' : 'dark'); } catch(e){}
+      syncThemeIcons();
+    });
+
+    /* ===== Language Toggle ===== */
+    var T = {
+      sign_in:['Sign in','تسجيل الدخول'],
+      ai_platform:['AI-Powered Support Platform','منصة دعم مدعومة بالذكاء الاصطناعي'],
+      fast_smart:['Fast & Smart','سريع وذكي'],
+      customer_support:['Customer Support','دعم العملاء'],
+      hero_desc:['Get instant AI-powered replies in Arabic and English. Create tickets, track progress, and resolve issues faster than ever.','احصل على ردود فورية مدعومة بالذكاء الاصطناعي بالعربية والإنجليزية. أنشئ تذاكر، تابع التقدم، وحل المشاكل أسرع من أي وقت.'],
+      continue_discord:['Continue with Discord','تابع عبر Discord'],
+      learn_more:['Learn more','اعرف المزيد'],
+      uptime:['Uptime','وقت التشغيل'],
+      ai_response:['AI Response','استجابة AI'],
+      available:['Available','متاح'],
+      everything_need:['Everything you need','كل ما تحتاجه'],
+      features_desc:['A complete support platform designed for speed, intelligence, and seamless communication.','منصة دعم متكاملة مصممة للسرعة والذكاء والتواصل السلس.'],
+      ai_support:['AI Support','دعم ذكي'],
+      ai_support_desc:['Instant AI-powered responses that understand context and resolve issues intelligently.','ردود فورية مدعومة بالذكاء الاصطناعي تفهم السياق وتحل المشاكل بذكاء.'],
+      fast_replies:['Fast Replies','ردود سريعة'],
+      fast_replies_desc:['Get answers in seconds, not hours. Our AI learns from every interaction to improve.','احصل على إجابات في ثوانٍ وليس ساعات. ذكاؤنا الاصطناعي يتعلم من كل تفاعل.'],
+      multilingual:['Multilingual','متعدد اللغات'],
+      multilingual_desc:['Full Arabic and English support with automatic language detection and localized replies.','دعم كامل للعربية والإنجليزية مع كشف تلقائي للغة وردود محلية.'],
+      secure:['Secure','آمن'],
+      secure_desc:['Discord OAuth authentication with role-based admin access and full audit logging.','مصادقة Discord OAuth مع صلاحيات إدارية حسب الدور وسجل مراجعة كامل.'],
+      ready_start:['Ready to get started?','مستعد للبدء؟'],
+      cta_desc:['Create your first ticket in seconds. No signup forms, just Discord.','أنشئ أول تذكرة لك في ثوانٍ. بدون نماذج تسجيل، فقط Discord.'],
+      get_started:['Get Started with Discord','ابدأ مع Discord'],
+      privacy:['Privacy','الخصوصية'],
+      terms:['Terms','الشروط'],
+      contact:['Contact','اتصل بنا'],
+      my_tickets:['My Tickets','تذاكري'],
+      new_ticket:['New Ticket','تذكرة جديدة'],
+      open:['Open','مفتوحة'],
+      closed:['Closed','مغلقة'],
+      select_ticket:['Select a ticket or create a new one','اختر تذكرة أو أنشئ واحدة جديدة'],
+      sign_out:['Sign out','تسجيل الخروج'],
+      loading:['Loading...','جاري التحميل...'],
+      overview:['Overview','نظرة عامة'],
+      tickets:['Tickets','التذاكر'],
+      users:['Users','المستخدمون'],
+      points:['Points','النقاط'],
+      exchange:['Exchange','التبادل'],
+      orders:['Orders','الطلبات'],
+      audit_log:['Audit Log','سجل المراجعة'],
+      products:['Products','المنتجات'],
+      user_dashboard:['User Dashboard','لوحة المستخدم'],
+      admin:['Admin','المشرف'],
+      stats:['Stats','إحصائيات'],
+      send:['Send','إرسال'],
+      close_ticket:['Close Ticket','إغلاق التذكرة'],
+      reopen:['Reopen','إعادة فتح'],
+      subject:['Subject','الموضوع'],
+      category:['Category','الفئة'],
+      message:['Message','الرسالة'],
+      create:['Create','إنشاء'],
+      cancel:['Cancel','إلغاء'],
+      search:['Search','بحث'],
+      no_tickets:['No tickets yet','لا توجد تذاكر بعد'],
+      type_message:['Type a message...','اكتب رسالة...'],
+      senior_admin:['Senior Admin','مشرف أول'],
+      ticket_support:['Ticket Support','دعم التذاكر'],
+      create_new_ticket:['Create New Ticket','إنشاء تذكرة جديدة'],
+      choose_category:['Choose a category that best describes your request.','اختر الفئة التي تصف طلبك بشكل أفضل.'],
+      tech_support:['Technical Support','الدعم الفني'],
+      tech_support_desc:['For technical issues and feedback','للمشاكل التقنية والملاحظات'],
+      inquiry:['Inquiry','استفسار'],
+      inquiry_desc:['For general questions and inquiries','للأسئلة العامة والاستفسارات'],
+      business:['Business','أعمال'],
+      business_desc:['For reselling, media, and deals','لإعادة البيع والإعلام والصفقات'],
+      next:['Next','التالي'],
+      back:['Back','رجوع'],
+      ticket_details:['Ticket Details','تفاصيل التذكرة'],
+      ticket_details_desc:['Give your ticket a clear title and describe your issue in Arabic or English.','أعطِ تذكرتك عنواناً واضحاً وصف مشكلتك بالعربية أو الإنجليزية.'],
+      product:['Product','المنتج'],
+      select_product:['Select a product...','اختر منتج...'],
+      search_products:['Search products...','البحث عن منتجات...'],
+      title:['Title','العنوان'],
+      title_placeholder:['Brief summary of your issue...','ملخص قصير لمشكلتك...'],
+      description:['Description','الوصف'],
+      desc_placeholder:['Describe your issue in detail...','صف مشكلتك بالتفصيل...'],
+      submit_ticket:['Submit Ticket','إرسال التذكرة'],
+      edit_message:['Edit Message','تعديل الرسالة'],
+      save:['Save','حفظ'],
+      type_message:['Type your message...','اكتب رسالتك...'],
+      no_tickets_found:['No tickets found','لا توجد تذاكر'],
+      failed_to_load:['Failed to load','فشل التحميل'],
+      urgent:['Urgent','عاجل'],
+      deleted:['Deleted','محذوف'],
+      has_open_ticket:['You already have an open ticket. Please wait for it to be resolved or closed before creating a new one.','لديك تذكرة مفتوحة بالفعل. يرجى الانتظار حتى يتم حلها أو إغلاقها قبل إنشاء واحدة جديدة.'],
+      submitting:['Submitting...','جاري الإرسال...'],
+      closed_by:['closed by','أُغلقت بواسطة'],
+      system_autoclose:['System (Auto-close)','النظام (إغلاق تلقائي)'],
+      ticket_deleted:['This ticket has been deleted.','تم حذف هذه التذكرة.'],
+      ticket_delete_in:['This ticket will be deleted in','سيتم حذف هذه التذكرة خلال'],
+      order_number:['Order Number','رقم الطلب'],
+      order_placeholder:['Enter your order number...','أدخل رقم الطلب...'],
+      order_required:['Order number is required for Technical Support.','رقم الطلب مطلوب للدعم الفني.'],
+      order_not_found:['Order number not found. Please enter a valid order number.','رقم الطلب غير موجود. يرجى إدخال رقم طلب صحيح.'],
+      order_used:['This order number is associated with another client and cannot be used.','رقم الطلب هذا مرتبط بعميل آخر ولا يمكن استخدامه.'],
+      order_invalid_format:['Invalid order number format','صيغة رقم الطلب غير صحيحة'],
+      order_verify_unavailable:['Order verification service unavailable','خدمة التحقق من الطلب غير متاحة'],
+      product_required:['Product selection is required for Technical Support.','اختيار المنتج مطلوب للدعم الفني.'],
+      product_required_inq:['Product selection is required for Inquiry tickets.','اختيار المنتج مطلوب لتذاكر الاستفسار.'],
+      title_required:['Title is required.','العنوان مطلوب.'],
+      desc_required:['Description is required.','الوصف مطلوب.'],
+      rate_limited:['Too many requests. Please try again shortly.','طلبات كثيرة جداً. يرجى المحاولة لاحقاً.'],
+      your_rating:['Your rating:','تقييمك:'],
+      rate_support:['Rate the support service','قيّم خدمة الدعم'],
+      ai_support:['AI Support','دعم ذكي'],
+      admin_label:['Admin','المشرف'],
+      user_label:['User','المستخدم'],
+      unknown:['Unknown','غير معروف'],
+      ticket_hash:['Ticket #','تذكرة #'],
+      replying_to:['Replying to','رد على'],
+      copy:['Copy','نسخ'],
+      reply:['Reply','رد'],
+      edit:['Edit','تعديل'],
+      delete_label:['Delete','حذف'],
+      delete_msg_confirm:['Delete this message?','هل تريد حذف هذه الرسالة؟'],
+      upload_image:['Upload image','رفع صورة'],
+      only_images:['Only images (PNG, JPG, GIF, WebP) are allowed.','يُسمح فقط بالصور (PNG, JPG, GIF, WebP).'],
+      image_too_large:['Image too large. Max 5MB.','الصورة كبيرة جداً. الحد الأقصى 5 ميجابايت.'],
+      upload_failed:['Upload failed','فشل الرفع'],
+      no_products_found:['No products found','لم يتم العثور على منتجات'],
+      status_open:['Open','مفتوحة'],
+      status_open_label:['Opened','مفتوحة'],
+      status_answered:['Answered','تم الرد'],
+      status_closed:['Closed','مغلقة'],
+      h_unit:['h','س'],
+      m_unit:['m','د'],
+      s_unit:['s','ث'],
+      just_now:['Just now','الآن'],
+      today:['Today','اليوم'],
+      yesterday:['Yesterday','أمس'],
+      ago:['ago','مضت'],
+      monitor_manage:['Monitor and manage all support tickets.','مراقبة وإدارة جميع تذاكر الدعم.'],
+      total:['Total','الإجمالي'],
+      urgent_label:['Urgent','عاجل'],
+      responded:['Responded','تم الرد'],
+      latest_tickets:['Latest Tickets','أحدث التذاكر'],
+      view_all:['View all','عرض الكل'],
+      pts_leaderboard:['Points Leaderboard','لوحة متصدري النقاط'],
+      tickets_label:['tickets','تذاكر'],
+      ticket_label:['ticket','تذكرة'],
+      search_tickets:['Search by ID, user, product, title, or keywords...','البحث بالمعرف، المستخدم، المنتج، العنوان، أو الكلمات...'],
+      all_types:['All Types','كل الأنواع'],
+      escalated:['Escalated','تم التصعيد'],
+      all_label:['All','الكل'],
+      select_ticket_manage:['Select a ticket to manage','اختر تذكرة لإدارتها'],
+      escalate:['Escalate','تصعيد'],
+      close:['Close','إغلاق'],
+      remind:['Remind','تذكير'],
+      sending:['Sending...','جاري الإرسال...'],
+      sent:['Sent!','تم الإرسال!'],
+      reply_as_admin:['Reply as admin...','رد كمشرف...'],
+      my_points:['My Points','نقاطي'],
+      earn_points_desc:['Earn points for supporting tickets. 1,000 points = $10','اكسب نقاط من دعم التذاكر. 1,000 نقطة = 10 دولار'],
+      this_week:['This Week','هذا الأسبوع'],
+      this_month:['This Month','هذا الشهر'],
+      how_earn:['How You Earn Points','كيف تكسب النقاط'],
+      reply_ticket_pts:['Reply to a ticket','الرد على تذكرة'],
+      first_response_pts:['First response (claim)','أول رد (استلام)'],
+      close_ticket_pts:['Close a ticket','إغلاق تذكرة'],
+      inactivity_penalty:['penalty if no interaction for 24h on an assigned ticket','خصم 300 نقطة لو ما تفاعل الأدمن بالكامل خلال 24 ساعة على تذكرة مستلمة'],
+      my_redemption:['My Redemption Requests','طلبات الاستبدال'],
+      leaderboard:['Leaderboard','لوحة المتصدرين'],
+      weekly:['Weekly','أسبوعي'],
+      monthly:['Monthly','شهري'],
+      total_tab:['Total','الإجمالي'],
+      active_boost:['Active Boost','تعزيز نشط'],
+      pts_boost_active:['Points Boost Active!','تعزيز النقاط نشط!'],
+      pts_management:['Points Management','إدارة النقاط'],
+      pts_boost:['Points Boost','تعزيز النقاط'],
+      boost_pct:['Boost %','نسبة التعزيز %'],
+      duration_hours:['Duration (hours)','المدة (ساعات)'],
+      activate_boost:['Activate Boost','تفعيل التعزيز'],
+      recent_adjustments:['Recent Adjustments','التعديلات الأخيرة'],
+      manage_requests:['Manage Redemption Requests','إدارة طلبات الاستبدال'],
+      manage_products:['Manage store products that clients can select when creating tickets.','إدارة منتجات المتجر التي يمكن للعملاء اختيارها عند إنشاء التذاكر.'],
+      add_product:['Add Product','إضافة منتج'],
+      edit_product:['Edit Product','تعديل المنتج'],
+      product_name:['Product Name','اسم المنتج'],
+      image_url:['Image URL','رابط الصورة'],
+      available:['Available','متاح'],
+      unavailable:['Unavailable','غير متاح'],
+      remove:['Remove','إزالة'],
+      remove_product_confirm:['Remove product:','إزالة المنتج:'],
+      users_tab:['Users','المستخدمون'],
+      manage_users_desc:['View and manage all registered users.','عرض وإدارة جميع المستخدمين المسجلين.'],
+      search_users:['Search by username, email, or ID...','البحث بالاسم أو البريد أو المعرف...'],
+      all_roles:['All roles','كل الأدوار'],
+      users_only:['Users only','المستخدمون فقط'],
+      admins_only:['Admins only','المشرفون فقط'],
+      blacklisted:['Blacklisted','محظور'],
+      unblacklist:['Unblacklist','رفع الحظر'],
+      blacklist:['Blacklist','حظر'],
+      demote:['Demote','تخفيض'],
+      promote:['Promote','ترقية'],
+      joined:['Joined','انضم'],
+      rating:['Rating:','التقييم:'],
+      na:['N/A','غ/م'],
+      blacklist_confirm:['Blacklist this user? They will not be able to log in or create tickets.','حظر هذا المستخدم؟ لن يتمكن من تسجيل الدخول أو إنشاء تذاكر.'],
+      unblacklist_confirm:['Remove this user from the blacklist?','رفع الحظر عن هذا المستخدم؟'],
+      demote_confirm:['Remove admin privileges from this user?','إزالة صلاحيات المشرف من هذا المستخدم؟'],
+      enter_valid_amount:['Enter a valid amount','أدخل مبلغاً صحيحاً'],
+      enter_reason:['Enter a reason','أدخل السبب'],
+      remove_pts_confirm:['Remove points?','إزالة نقاط؟'],
+      manage_points:['Manage Points','إدارة النقاط'],
+      add_pts:['+ Add','+ إضافة'],
+      remove_pts:['- Remove','- إزالة'],
+      amount:['Amount','المبلغ'],
+      reason:['Reason','السبب'],
+      apply:['Apply','تطبيق'],
+      exchange_tab:['Exchange','التبادل'],
+      redeem_desc:['Redeem points for requests. 1,000 points = $10','استبدال النقاط بطلبات. 1,000 نقطة = 10 دولار'],
+      search_exchange:['Search by ID, description, or requester...','البحث بالمعرف أو الوصف أو مقدم الطلب...'],
+      submit_new_request:['Submit New Request','تقديم طلب جديد'],
+      pts_to_spend:['Points to spend','النقاط المراد استخدامها'],
+      what_would_you_like:['What would you like? (product/description)','ماذا تريد؟ (منتج/وصف)'],
+      submit:['Submit','إرسال'],
+      select_request:['Select a request to view details','اختر طلباً لعرض التفاصيل'],
+      add_message:['Add a message...','أضف رسالة...'],
+      pending:['Pending','قيد الانتظار'],
+      history:['History','السجل'],
+      approve:['Approve','موافقة'],
+      reject:['Reject','رفض'],
+      approval_note:['Approval note (optional):','ملاحظة الموافقة (اختياري):'],
+      rejection_reason:['Rejection reason (optional):','سبب الرفض (اختياري):'],
+      completed:['Completed','مكتمل'],
+      rejected:['Rejected','مرفوض'],
+      min_100_pts:['Minimum 100 points','الحد الأدنى 100 نقطة'],
+      enter_description:['Enter a description','أدخل وصفاً'],
+      breaks:['Breaks','الإجازات'],
+      breaks_tab:['Breaks','الإجازات'],
+      breaks_desc:['Request time off and manage admin breaks.','طلب إجازة وإدارة إجازات المشرفين.'],
+      search_breaks:['Search by name, reason, or ID...','البحث بالاسم أو السبب أو المعرف...'],
+      request_break:['Request Break','طلب إجازة'],
+      start_date:['Start Date','تاريخ البداية'],
+      end_date:['End Date','تاريخ النهاية'],
+      break_reason_ph:['Reason for break (e.g. Travel, Exams, Health...)','سبب الإجازة (مثال: سفر، اختبارات، صحة...)'],
+      select_break_request:['Select a request to view details','اختر طلباً لعرض التفاصيل'],
+      days:['days','أيام'],
+      approve:['Approve','موافقة'],
+      reject_break:['Reject Break Request','رفض طلب الإجازة'],
+      reject_break_desc:['You must provide a reason (visible to the requester).','يجب تقديم سبب (مرئي لمقدم الطلب).'],
+      break_approved:['Your break request has been approved.','تمت الموافقة على طلب إجازتك.'],
+      break_rejected:['Your break request was rejected.','تم رفض طلب إجازتك.'],
+      reviewed_by:['Reviewed by','تمت المراجعة بواسطة'],
+      days_btn:['Days','أيام'],
+      weeks_btn:['Weeks','أسابيع'],
+      weeks:['weeks','أسابيع'],
+      duration_required:['Enter a valid duration (minimum 1)','أدخل مدة صالحة (الحد الأدنى 1)'],
+      on_break:['On Break','في إجازة'],
+      close_ticket:['Close Ticket','إغلاق التذكرة'],
+      close_ticket_confirm:['Are you sure you want to close this ticket?','هل أنت متأكد أنك تريد إغلاق هذه التذكرة؟'],
+      ticket_closed_by_user:['Ticket closed by user.','تم إغلاق التذكرة بواسطة المستخدم.'],
+      access_denied:['Access Denied','الوصول مرفوض'],
+      access_denied_desc:['You do not have permission to view this ticket.','ليس لديك صلاحية لعرض هذه التذكرة.'],
+      private_ticket:['Private','خاصة'],
+      reason_required:['Reason is required','السبب مطلوب'],
+      add_message:['Add a message...','أضف رسالة...'],
+      approved:['Approved','مُعتمد'],
+      rmz_orders:['RMZ Orders','طلبات RMZ'],
+      search_order_id:['Search by Order ID...','البحث برقم الطلب...'],
+      loading_orders:['Loading orders...','جاري تحميل الطلبات...'],
+      failed_load_orders:['Failed to load orders','فشل تحميل الطلبات'],
+      no_orders_search:['No orders matching search.','لا توجد طلبات مطابقة للبحث.'],
+      no_orders:['No orders found.','لم يتم العثور على طلبات.'],
+      order_id:['Order ID','رقم الطلب'],
+      customer:['Customer','العميل'],
+      email:['Email','البريد الإلكتروني'],
+      date:['Date','التاريخ'],
+      order_details:['Order Details','تفاصيل الطلب'],
+      prev:['Prev','السابق'],
+      next_page:['Next','التالي'],
+      page:['Page','صفحة'],
+      audit_tab:['Audit Log','سجل المراجعة'],
+      audit_desc:['Track your points and message activity.','تتبع نشاط النقاط والرسائل.'],
+      points_tab:['Points','النقاط'],
+      messages_tab:['Messages','الرسائل'],
+      general_tab:['General','عام'],
+      sent_tab:['Sent','مرسلة'],
+      edited_tab:['Edited','معدلة'],
+      deleted_tab:['Deleted','محذوفة'],
+      search_logs:['Search logs...','البحث في السجلات...'],
+      no_point_changes:['No point changes recorded yet.','لا توجد تغييرات نقاط مسجلة بعد.'],
+      no_messages_audit:['No messages recorded yet.','لا توجد رسائل مسجلة بعد.'],
+      sent_message:['Sent Message','رسالة مرسلة'],
+      edited_message:['Edited Message','رسالة معدلة'],
+      deleted_message:['Deleted Message','رسالة محذوفة'],
+      before:['Before','قبل'],
+      after:['After','بعد'],
+      no_logs:['No activity logs yet.','لا توجد سجلات نشاط بعد.'],
+      no_matching_logs:['No matching logs.','لا توجد سجلات مطابقة.'],
+      promote_user:['Promote User','ترقية المستخدم'],
+      choose_role:['Choose the admin role to assign.','اختر الدور الإداري للتعيين.'],
+      ts_desc:['Can view open tickets and reply','يمكنه عرض التذاكر المفتوحة والرد'],
+      admin_desc:['Can view closed tickets and reopen','يمكنه عرض التذاكر المغلقة وإعادة فتحها'],
+      sa_desc:['Full access including user management','وصول كامل بما في ذلك إدارة المستخدمين'],
+      senior_admin_mgmt:['Senior Admin / Management','مشرف أول / إدارة'],
+      close_ticket_confirm:['Close this ticket?','إغلاق هذه التذكرة؟'],
+      close_ticket_desc:['The ticket will be marked as closed.','سيتم تعليم التذكرة كمغلقة.'],
+      reject_request:['Reject Request','رفض الطلب'],
+      reject_reason_desc:['You must provide a reason (visible to the requester).','يجب تقديم سبب (مرئي لمقدم الطلب).'],
+      reject_reason_ph:['Reason for rejection...','سبب الرفض...'],
+      reopen_confirm:['Reopen this ticket?','إعادة فتح هذه التذكرة؟'],
+      escalate_confirm:['Escalate this ticket to higher-level admins?','تصعيد هذه التذكرة لمشرفين أعلى؟'],
+      no_active_tickets:['No active tickets.','لا توجد تذاكر نشطة.'],
+      no_pts_data:['No points data yet.','لا توجد بيانات نقاط بعد.'],
+      could_not_load_lb:['Could not load leaderboard.','لم يتم تحميل لوحة المتصدرين.'],
+      replied_by:['Responded by','رد بواسطة'],
+      replies:['replies','ردود'],
+      closures:['closures','إغلاقات'],
+      claims:['claims','استلامات'],
+      no_requests_yet:['No redemption requests yet.','لا توجد طلبات استبدال بعد.'],
+      no_data_yet:['No data yet.','لا توجد بيانات بعد.'],
+      no_requests:['No requests.','لا توجد طلبات.'],
+      no_adjustments:['No adjustments yet.','لا توجد تعديلات بعد.'],
+      by_label:['by','بواسطة'],
+      boost_expired:['Expired','منتهي'],
+      remaining:['remaining','متبقي'],
+      boost_has_expired:['Boost has expired','انتهى التعزيز'],
+      earn_extra:['Earn extra points for the next','اكسب نقاط إضافية لمدة'],
+      no_requests_section:['No requests in this section.','لا توجد طلبات في هذا القسم.'],
+      complete:['Complete','إكمال'],
+      request_completed:['Your request has been Completed.','تم إكمال طلبك.'],
+      request_rejected:['Your request has been Rejected. Reason:','تم رفض طلبك. السبب:'],
+      no_products_yet:['No products yet. Click "Add Product" to create one.','لا توجد منتجات بعد. اضغط "إضافة منتج" لإنشاء واحد.'],
+      id_label:['ID:','المعرف:'],
+      valid_boost_pct:['Enter a valid boost percentage','أدخل نسبة تعزيز صحيحة'],
+      valid_duration:['Enter a valid duration','أدخل مدة صحيحة'],
+      activate_boost_confirm:['Activate a points boost?','تفعيل تعزيز النقاط؟'],
+      bonus:['bonus','مكافأة'],
+      admin_login:['Admin Login','دخول المشرف'],
+      replied_ticket:['Replied to Ticket','رد على تذكرة'],
+      closed_ticket_log:['Closed Ticket','إغلاق تذكرة'],
+      reopened_ticket:['Reopened Ticket','إعادة فتح تذكرة'],
+      escalated_ticket:['Escalated Ticket','تصعيد تذكرة'],
+      pts_adjusted:['Points Adjusted','تعديل نقاط'],
+      boost_activated:['Boost Activated','تفعيل تعزيز'],
+      exchange_approved:['Exchange Approved','موافقة على استبدال'],
+      exchange_rejected:['Exchange Rejected','رفض استبدال'],
+      ticket_opened:['Ticket Opened','فتح تذكرة'],
+      exchange_submitted:['Exchange Submitted','تقديم طلب استبدال'],
+      action:['Action','إجراء'],
+      seen_by_support:['Seen by support','شوهدت من الدعم'],
+      closing:['Closing...','جاري الإغلاق...'],
+      reopening:['Reopening...','جاري إعادة الفتح...'],
+      escalating:['Escalating...','جاري التصعيد...'],
+      confirm:['Confirm','تأكيد'],
+      no_matching_section:['No tickets in this section','لا توجد تذاكر في هذا القسم'],
+      matching_search:['matching your search','مطابقة لبحثك'],
+      users_label:['users','مستخدمين'],
+      user_count:['user','مستخدم'],
+      no_users:['No users found','لم يتم العثور على مستخدمين'],
+      products_count:['products','منتجات'],
+      product_count:['product','منتج'],
+      you:['You','أنت'],
+      order_hash:['Order #','طلب #'],
+      save:['Save','حفظ'],
+      cancel:['Cancel','إلغاء'],
+      assign_to_me:['Assign to me','تعيين لي'],
+      reassign_to_me:['Reassign to me','إعادة تعيين لي'],
+      unassign:['Unassign','إلغاء التعيين'],
+      assigned:['Assigned to you','تم التعيين لك'],
+      unassigned:['Unassigned','تم إلغاء التعيين'],
+      assigned_to_label:['Assigned to','معيّن إلى'],
+      typing_indicator:['typing...','يكتب...'],
+      search_my_tickets:['Search tickets...','البحث في التذاكر...'],
+      canned_responses:['Quick Replies','الردود الجاهزة'],
+      add_canned:['Add Quick Reply','إضافة رد جاهز'],
+      canned_title:['Title','العنوان'],
+      canned_en:['English content','المحتوى بالإنجليزية'],
+      canned_ar:['Arabic content','المحتوى بالعربية'],
+      no_canned:['No quick replies yet.','لا توجد ردود جاهزة بعد.'],
+      export_csv:['Export CSV','تصدير CSV'],
+      my_assigned:['My Tickets','تذاكري'],
+      new_message_sound:['New message','رسالة جديدة'],
+      charts_title:['Ticket Analytics','تحليلات التذاكر'],
+      tickets_per_day:['Tickets / Day','تذاكر / يوم'],
+      avg_response:['Avg Response','متوسط الاستجابة'],
+      file_too_large:['File too large. Max 5MB.','الملف كبير جداً. الحد الأقصى 5 ميجابايت.'],
+      allowed_files:['Allowed: images, PDF, TXT','المسموح: صور، PDF، TXT'],
+      enable_notifications:['Enable Notifications','تفعيل الإشعارات'],
+      notifications_enabled:['Notifications Enabled','الإشعارات مفعّلة'],
+      notifications_blocked:['Notifications Blocked','الإشعارات محظورة'],
+      notif_not_supported:['Your browser does not support notifications','متصفحك لا يدعم الإشعارات'],
+      notif_already_on:['Notifications are already enabled','الإشعارات مفعّلة مسبقاً'],
+      notif_denied:['Notifications are blocked. Enable them in browser settings.','الإشعارات محظورة. فعّلها من إعدادات المتصفح.'],
+      notif_enabled_success:['Desktop notifications enabled!','تم تفعيل إشعارات سطح المكتب!'],
+      copy_user_id:['Copy User ID','نسخ آيدي المستخدم'],
+      copied_user_id:['Discord ID copied','تم نسخ آيدي الديسكورد'],
+      copy_failed:['Copy failed','فشل النسخ'],
+      cannot_reply_resolved:['Cannot reply to resolved request','لا يمكن الرد على طلب تم حسمه'],
+      admin_replied:['Admin replied','تم رد الإدارة'],
+      waiting_for_support:['Waiting for support','بانتظار رد الدعم'],
+      new_ticket:['New Ticket','تذكرة جديدة']
+    };
+
+    window._nwT = T;
+    var langBtn = document.getElementById('nw-lang-btn');
+    var langSpan = langBtn.querySelector('span');
+
+    function getCurrentLang() {
+      return document.documentElement.lang === 'ar' ? 'ar' : 'en';
+    }
+
+    function applyLang(lang) {
+      var idx = lang === 'ar' ? 1 : 0;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      langSpan.textContent = lang === 'ar' ? 'English' : 'العربية';
+
+      var els = document.querySelectorAll('[data-i18n]');
+      for (var i = 0; i < els.length; i++) {
+        var key = els[i].getAttribute('data-i18n');
+        if (T[key]) els[i].textContent = T[key][idx];
+      }
+
+      var phEls = document.querySelectorAll('[data-i18n-ph]');
+      for (var j = 0; j < phEls.length; j++) {
+        var phKey = phEls[j].getAttribute('data-i18n-ph');
+        if (T[phKey]) phEls[j].placeholder = T[phKey][idx];
+      }
+
+      var titleEls = document.querySelectorAll('[data-i18n-title]');
+      for (var t = 0; t < titleEls.length; t++) {
+        var tKey = titleEls[t].getAttribute('data-i18n-title');
+        if (T[tKey]) titleEls[t].title = T[tKey][idx];
+      }
+    }
+
+    var savedLang = 'en';
+    try { savedLang = localStorage.getItem('nw-lang') || 'en'; } catch(e){}
+    if (savedLang === 'ar') applyLang('ar');
+    else { langSpan.textContent = 'العربية'; }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { var lb = document.getElementById('img-lightbox'); if (lb) lb.classList.add('hidden'); }
+    });
+
+    window._nwLangCallbacks = [];
+    langBtn.addEventListener('click', function() {
+      var next = getCurrentLang() === 'en' ? 'ar' : 'en';
+      applyLang(next);
+      try { localStorage.setItem('nw-lang', next); } catch(e){}
+      for (var k = 0; k < window._nwLangCallbacks.length; k++) { try { window._nwLangCallbacks[k](); } catch(e){} }
+    });
+  })();
+  </script>
 </body>
 </html>

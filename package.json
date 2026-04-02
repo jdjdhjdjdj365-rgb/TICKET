@@ -1,5 +1,5 @@
 {
-  "name": "ticket-system",
+  "name": "7rz-ticket-system",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -10,6 +10,8 @@
     "mongoose": "^7.0.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.0",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "axios": "^1.6.0",
+    "express-session": "^1.17.3"
   }
 }
