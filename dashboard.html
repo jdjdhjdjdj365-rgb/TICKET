@@ -17,15 +17,15 @@
       theme: {
         extend: {
           colors: {
-            brand: { 50:'#052e16',100:'#14532d',200:'#166534',300:'#15803d',400:'#16a34a',500:'#22c55e',600:'#4ade80',700:'#86efac',800:'#bbf7d0',900:'#dcfce7' },
+            brand: { 50:'#f8fafc',100:'#f1f5f9',200:'#e2e8f0',300:'#cbd5e1',400:'#94a3b8',500:'#64748b',600:'#475569',700:'#334155',800:'#1e293b',900:'#0f172a' },
             discord: { DEFAULT:'#5865F2', dark:'#4752c4' },
             surface: { DEFAULT:'#111827', soft:'#0b1120', border:'rgba(255,255,255,0.08)', muted:'#1e293b' },
             dm: { card:'#111827', elevated:'#1e293b', input:'#0f172a' }
           },
           fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
           boxShadow: {
-            'glow': '0 0 20px rgba(34,197,94,0.2)',
-            'glow-lg': '0 0 40px rgba(34,197,94,0.25)',
+            'glow': '0 0 20px rgba(100,116,139,0.2)',
+            'glow-lg': '0 0 40px rgba(100,116,139,0.25)',
             'card': '0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)',
             'card-hover': '0 10px 25px rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.3)',
             'sidebar': '1px 0 0 0 rgba(255,255,255,0.05)',
@@ -43,8 +43,8 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(34,197,94,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(34,197,94,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(100,116,139,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100,116,139,0.03) 1px, transparent 1px);
       background-size: 50px 50px;
       pointer-events: none;
       z-index: 1;
@@ -58,7 +58,7 @@
       width: 50vw;
       height: 50vw;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(100,116,139,0.06) 0%, transparent 70%);
       z-index: 0;
       filter: blur(80px);
       pointer-events: none;
@@ -134,7 +134,7 @@
       content: '';
       position: absolute;
       inset: -2px;
-      background: linear-gradient(135deg, rgba(34,197,94,0.4), rgba(22,163,74,0.2));
+      background: linear-gradient(135deg, rgba(100,116,139,0.4), rgba(100,116,139,0.2));
       border-radius: inherit;
       opacity: 0;
       transition: opacity .3s;
@@ -148,8 +148,8 @@
     .sidebar-link {
       transition: all .12s ease;
     }
-    .sidebar-link:hover { background: rgba(34,197,94,0.1); }
-    .sidebar-link.active { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .sidebar-link:hover { background: rgba(100,116,139,0.1); }
+    .sidebar-link.active { background: rgba(100,116,139,0.15); color: #64748b; }
 
     .skeleton {
       background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
@@ -163,16 +163,16 @@
     .skeleton-card { padding: 16px; border-radius: 16px; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    :focus-visible { outline: 2px solid rgba(34,197,94,0.5); outline-offset: 2px; border-radius: 8px; }
+    :focus-visible { outline: 2px solid rgba(100,116,139,0.5); outline-offset: 2px; border-radius: 8px; }
     button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-      outline: 2px solid rgba(34,197,94,0.5); outline-offset: 2px;
+      outline: 2px solid rgba(100,116,139,0.5); outline-offset: 2px;
     }
 
     .send-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.5s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .ticket-card-hover { transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
-    .ticket-card-hover:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-color: rgba(34,197,94,0.15); }
+    .ticket-card-hover:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-color: rgba(100,116,139,0.15); }
 
     .role-ring-1 { ring: 2px; --tw-ring-color: rgba(148,163,184,0.3); }
     .role-ring-2 { ring: 2px; --tw-ring-color: rgba(96,165,250,0.4); }
@@ -184,7 +184,7 @@
     ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
     .gradient-text {
-      background: linear-gradient(135deg, #4ade80, #22c55e);
+      background: linear-gradient(135deg, #64748b, #475569);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
