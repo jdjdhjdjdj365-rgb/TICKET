@@ -22,15 +22,21 @@ app.use(session({
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
 }));
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/tickets');
+// MongoDB Connection with better error handling
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/tickets')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    console.log('Starting server without MongoDB...');
+  });
 
-// Discord Configuration
-const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID || 'YOUR_DISCORD_CLIENT_ID';
-const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET || 'YOUR_DISCORD_CLIENT_SECRET';
+// Discord Configuration with fallbacks
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID || '1336042795005116426';
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET || 'w37TFcI8cGFCbFsijJ7jlrnxkUREIbvn';
 const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI || 'https://ticket-production-8b62.up.railway.app/auth/discord/callback';
-const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID || 'Y1410175025796874333'; // For role checking
+const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID || '1410175025796874333'; // For role checking
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || 'https://discord.com/api/webhooks/1489290445019418811/aqgelFRBHm-UeRYZ7X4lI7a084-agQp7VH3U52CZFRXMOhHeFAJSdcMWpnyoPYiTl2cH '; // For ticket notifications
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-change-this';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secure-secret-key-12345';
 
 // Admin role mappings (configure based on your Discord server)
 const ADMIN_ROLE_MAPPINGS = {
