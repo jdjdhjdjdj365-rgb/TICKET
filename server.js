@@ -22,13 +22,33 @@ app.use(session({
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
 }));
 
-// MongoDB Connection with better error handling
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/tickets')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
+// MongoDB Connection with retry and timeout handling
+let dbConnected = false;
+
+async function connectToMongoDB() {
+  try {
+    const options = {
+      serverSelectionTimeoutMS: 5000, // 5 seconds timeout
+      connectTimeoutMS: 10000, // 10 seconds timeout
+      maxPoolSize: 10, // Limit connections
+      bufferCommands: false, // Disable mongoose buffering
+      bufferMaxEntries: 0 // Disable mongoose buffering
+    };
+    
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/tickets', options);
+    dbConnected = true;
+    console.log('Connected to MongoDB successfully');
+  } catch (err) {
+    console.error('MongoDB connection failed:', err.message);
+    dbConnected = false;
     console.log('Starting server without MongoDB...');
-  });
+  }
+}
+
+// Connect to MongoDB
+connectToMongoDB();
+
+console.log('7rz Ticket System starting...');
 
 // Discord Configuration with fallbacks
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID || '1336042795005116426';
@@ -810,6 +830,32 @@ app.post('/login', async (req, res) => {
 
   const token = jwt.sign({ id: user._id }, 'secret');
   res.json({ token });
+});
+
+// Health check endpoint to prevent 502 errors
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    dbConnected: dbConnected
+  });
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection closed');
+    process.exit(0);
+  });
 });
 
 const PORT = process.env.PORT || 3000;
