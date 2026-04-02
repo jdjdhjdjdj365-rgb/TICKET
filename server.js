@@ -340,7 +340,25 @@ async function authenticateToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(decoded.userId).select('-accessToken -refreshToken');
+    let user;
+    
+    // Try to get from MongoDB first
+    if (dbConnected) {
+      user = await User.findById(decoded.userId).select('-accessToken -refreshToken');
+    } else {
+      // Fallback: Use JWT token data
+      user = {
+        _id: decoded.userId,
+        discordId: decoded.discordId || decoded.userId,
+        username: decoded.username || 'User',
+        avatar: decoded.avatar || null,
+        email: decoded.email || 'user@example.com',
+        discriminator: decoded.discriminator || '0000',
+        roles: decoded.roles || [],
+        isAdmin: decoded.isAdmin || false,
+        isStaff: decoded.isStaff || false
+      };
+    }
     
     if (!user) {
       return res.status(403).json({ error: 'User not found' });
@@ -504,8 +522,26 @@ app.patch('/api/tickets/:ticketId/status', authenticateToken, async (req, res) =
 // User Profile
 app.get('/api/user/profile', authenticateToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id)
-      .select('-accessToken -refreshToken');
+    let user;
+    
+    // Try to get from MongoDB first
+    if (dbConnected) {
+      user = await User.findById(req.user._id)
+        .select('-accessToken -refreshToken');
+    } else {
+      // Fallback: Return user info from JWT token
+      user = {
+        _id: req.user._id,
+        username: req.user.username || 'User',
+        discordId: req.user.discordId || req.user._id,
+        avatar: req.user.avatar || null,
+        email: req.user.email || 'user@example.com',
+        discriminator: req.user.discriminator || '0000',
+        roles: req.user.roles || [],
+        isAdmin: req.user.isAdmin || false,
+        isStaff: req.user.isStaff || false
+      };
+    }
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
